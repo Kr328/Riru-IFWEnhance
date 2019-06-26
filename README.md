@@ -13,7 +13,7 @@ A module of [Riru](https://github.com/RikkaApps/Riru). Enhance Intent Firewall.
 
 Enhance Intent Firewall
 
-* Apply Intent Firewall to `PackageManager.queryIntentActivities`
+* Apply Intent Firewall for **Implicit intents** (`PackageManager.queryIntentActivities`)
 
 
 
