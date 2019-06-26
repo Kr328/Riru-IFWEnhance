@@ -5,7 +5,7 @@ A module of [Riru](https://github.com/RikkaApps/Riru). Enhance Intent Firewall.
 ## Requirements
 
 * [Riru](https://github.com/RikkaApps/Riru) > 19 installed.
-* Android 8.0-9.0 (below not tests)
+* Android 9.0 (preview not tests)
 
 
 
