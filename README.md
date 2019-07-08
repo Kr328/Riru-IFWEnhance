@@ -1,4 +1,4 @@
-# Riru - InternalBrowserRedirect
+# Riru - IFWEnhance
 
 A module of [Riru](https://github.com/RikkaApps/Riru). Enhance Intent Firewall.
 
@@ -31,9 +31,10 @@ Enhance Intent Firewall
 
 3. Run command 
 
-``` Gradle 
-./gradlew build
-```
+    ``` bash 
+    ./gradlew build
+    ```
+    
 4. Pick riru-internal-browser-redirect.zip from module/build/outputs
 
 
