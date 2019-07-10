@@ -1,5 +1,6 @@
 package com.github.kr328.ifw;
 
+import android.app.IActivityManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.IPackageManager;
@@ -17,13 +18,8 @@ public class PackageManagerProxy extends IPackageManager.Stub {
     private IPackageManager original;
     private IntentFirewall intentFirewall;
 
-    public PackageManagerProxy(IPackageManager original) {
+    public PackageManagerProxy(IPackageManager original, IActivityManager activityManager) {
         this.original = original;
-    }
-
-    public void putActivityManager(Binder activityManager) {
-        if ( activityManager == null )
-            return;
 
         try {
             intentFirewall = IntentFirewall.fromActivityManager(activityManager);
@@ -42,7 +38,7 @@ public class PackageManagerProxy extends IPackageManager.Stub {
         if ( intentFirewall == null )
             return original.queryIntentActivities(intent, resolvedType, flags, userId);
         if (intent == null)
-            return original.queryIntentActivities(intent, resolvedType, flags, userId);
+            return original.queryIntentActivities(null, resolvedType, flags, userId);
         if (intent.getPackage() != null)
             return original.queryIntentActivities(intent, resolvedType, flags, userId);
         if (intent.getComponent() != null)
@@ -59,6 +55,7 @@ public class PackageManagerProxy extends IPackageManager.Stub {
 
             for (ResolveInfo info : or.getList()) {
                 intent.setComponent(ComponentName.createRelative(info.activityInfo.packageName, info.activityInfo.name));
+                intent.setPackage(info.activityInfo.packageName);
 
                 if ( intentFirewall.checkStartActivity(intent, callingUid, callingPid, resolvedType, info.activityInfo.applicationInfo) )
                     replaced.add(info);

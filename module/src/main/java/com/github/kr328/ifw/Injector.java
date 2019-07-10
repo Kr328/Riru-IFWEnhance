@@ -1,5 +1,6 @@
 package com.github.kr328.ifw;
 
+import android.app.IActivityManager;
 import android.content.Intent;
 import android.content.pm.IPackageManager;
 import android.net.Uri;
@@ -41,17 +42,9 @@ public class Injector {
                 switch (name) {
                     case "package":
                         originalPackageManager = (Binder) original;
-                        packageManagerProxy = new PackageManagerProxy(IPackageManager.Stub.asInterface(originalPackageManager));
-
-                        packageManagerProxy.putActivityManager(activityManager);
-
-                        return createProxyBinder(packageManagerProxy);
+                        break;
                     case "activity":
                         activityManager = (Binder) original;
-
-                        if ( packageManagerProxy != null )
-                            packageManagerProxy.putActivityManager(activityManager);
-
                         break;
                 }
 
@@ -61,9 +54,10 @@ public class Injector {
             @Override
             public IBinder getService(String name, IBinder original) {
                 if ( "package".equals(name) ) {
-                    if ( originalPackageManager == null || StackUtils.hasMethodOnStack(Thread.currentThread(), "getCommonServicesLocked") )
-                        return original;
-                    return original == null ? null : originalPackageManager;
+                    if ( StackUtils.hasMethodOnStack(Thread.currentThread(), "getCommonServicesLocked") )
+                        return createProxyBinder(new PackageManagerProxy(IPackageManager.Stub.asInterface(originalPackageManager),
+                                IActivityManager.Stub.asInterface(activityManager)));
+                    return original;
                 }
 
                 return original;
@@ -72,9 +66,10 @@ public class Injector {
             @Override
             public IBinder checkService(String name, IBinder original) {
                 if ( "package".equals(name) ) {
-                    if ( originalPackageManager == null || StackUtils.hasMethodOnStack(Thread.currentThread(), "getCommonServicesLocked") )
-                        return original;
-                    return original == null ? null : originalPackageManager;
+                    if ( StackUtils.hasMethodOnStack(Thread.currentThread(), "getCommonServicesLocked") )
+                        return createProxyBinder(new PackageManagerProxy(IPackageManager.Stub.asInterface(originalPackageManager),
+                                IActivityManager.Stub.asInterface(activityManager)));
+                    return original;
                 }
 
                 return original;
@@ -86,6 +81,8 @@ public class Injector {
     }
 
     private static Binder createProxyBinder(PackageManagerProxy packageManagerProxy) {
+        Log.i(Constants.TAG, "Creating proxy binder");
+
         int queryIntentCode;
 
         try {
