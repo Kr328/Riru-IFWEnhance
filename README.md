@@ -35,7 +35,7 @@ Enhance Intent Firewall
     ./gradlew build
     ```
     
-4. Pick riru-internal-browser-redirect.zip from module/build/outputs
+4. Pick riru-ifw-enhance.zip from module/build/outputs
 
 
 
