@@ -13,8 +13,18 @@ public class TransactCodeExporter {
     private int lastTransactCode;
 
     public TransactCodeExporter(Class<? extends Binder> stubClass) throws ReflectiveOperationException {
-        Method methodAsInterface = stubClass.getDeclaredMethod("asInterface", IBinder.class);
+        Method methodAsInterface = stubClass.getMethod("asInterface", IBinder.class);
         Binder TRANSACT_CODE_EXPORT_BINDER = new Binder() {
+            @Override
+            public String getInterfaceDescriptor() {
+                return "";
+            }
+
+            @Override
+            public IInterface queryLocalInterface(String descriptor) {
+                return null;
+            }
+
             @Override
             protected boolean onTransact(int code, Parcel data, Parcel reply, int flags) {
                 lastTransactCode = code;
@@ -25,7 +35,7 @@ public class TransactCodeExporter {
     }
 
     public int export(String name, Class<?> ...argTypes) throws ReflectiveOperationException {
-        Method m = proxyInterface.getClass().getDeclaredMethod(name, argTypes);
+        Method m = proxyInterface.getClass().getMethod(name, argTypes);
         return export(m);
     }
 

@@ -10,6 +10,8 @@ import android.os.Binder;
 import android.os.IInterface;
 import android.os.RemoteException;
 import android.util.Log;
+import com.github.kr328.ifw.proxy.ProxyBinderFactory;
+import com.github.kr328.ifw.proxy.ProxyBinderFactory.ReplaceTransact;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -34,6 +36,7 @@ public class PackageManagerProxy extends IPackageManager.Stub {
     }
 
     @Override
+    @ReplaceTransact
     public ParceledListSlice<ResolveInfo> queryIntentActivities(Intent intent, String resolvedType, int flags, int userId) throws RemoteException {
         if ( intentFirewall == null )
             return original.queryIntentActivities(intent, resolvedType, flags, userId);

@@ -1,6 +1,7 @@
 package android.os;
 
 public interface IServiceManager extends IInterface {
+    // Pie
     IBinder getService(String name) throws RemoteException;
 
     IBinder checkService(String name) throws RemoteException;
@@ -12,4 +13,10 @@ public interface IServiceManager extends IInterface {
 
     void setPermissionController(IPermissionController controller)
             throws RemoteException;
+
+    // Oreo
+    void addService(String name, IBinder service, boolean allowIsolated)
+            throws RemoteException;
+
+    String[] listServices() throws RemoteException;
 }

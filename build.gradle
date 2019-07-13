@@ -6,7 +6,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.3.2'
-        classpath 'com.github.kr328:riru-gradle-tools:1.0-alpha04'
+        classpath 'com.github.kr328:riru-gradle-tools:1.0-alpha05'
     }
 }
 

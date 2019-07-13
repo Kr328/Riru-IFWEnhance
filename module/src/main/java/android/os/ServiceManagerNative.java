@@ -5,6 +5,7 @@ public class ServiceManagerNative extends Binder implements IServiceManager {
         throw new IllegalArgumentException("Unsupported");
     }
 
+    // Pie
     @Override
     public IBinder getService(String paramString) throws RemoteException {
         throw new IllegalArgumentException("Unsupported");
@@ -28,6 +29,17 @@ public class ServiceManagerNative extends Binder implements IServiceManager {
     @Override
     public void setPermissionController(IPermissionController controller) throws RemoteException {
         throw new IllegalArgumentException("Unsupported");
+    }
+
+    // Oreo
+    @Override
+    public void addService(String name, IBinder service, boolean allowIsolated) throws RemoteException {
+
+    }
+
+    @Override
+    public String[] listServices() throws RemoteException {
+        return new String[0];
     }
 
     @Override

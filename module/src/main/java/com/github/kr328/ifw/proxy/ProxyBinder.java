@@ -1,6 +1,7 @@
 package com.github.kr328.ifw.proxy;
 
 import android.os.Binder;
+import android.os.IInterface;
 import android.os.Parcel;
 import android.os.RemoteException;
 
@@ -11,6 +12,30 @@ public class ProxyBinder extends Binder {
     public ProxyBinder(Binder original, Callback callback) {
         this.original = original;
         this.callback = callback;
+    }
+
+    @Override
+    public IInterface queryLocalInterface(String descriptor) {
+        return original.queryLocalInterface(descriptor);
+    }
+
+    @Override
+    public void attachInterface(IInterface owner, String descriptor) {
+    }
+
+    @Override
+    public String getInterfaceDescriptor() {
+        return original.getInterfaceDescriptor();
+    }
+
+    @Override
+    public boolean pingBinder() {
+        return original.pingBinder();
+    }
+
+    @Override
+    public boolean isBinderAlive() {
+        return original.isBinderAlive();
     }
 
     @Override

@@ -13,26 +13,35 @@ public class ServiceManagerProxy implements IServiceManager {
         IBinder checkService(String name, IBinder original);
     }
 
+    public static void install(Callback callback) throws ReflectiveOperationException {
+        IServiceManager original = getOriginalIServiceManager();
+        if ( original instanceof ServiceManagerProxy )
+            return;
+
+        setDefaultServiceManager(new ServiceManagerProxy(original, callback));
+    }
+
     private IServiceManager original;
     private Callback callback;
 
-    public ServiceManagerProxy(IServiceManager original, Callback callback) {
+    private ServiceManagerProxy(IServiceManager original, Callback callback) {
         this.original = original;
         this.callback = callback;
     }
 
-    public static IServiceManager getOriginalIServiceManager() throws ReflectiveOperationException {
+    private static IServiceManager getOriginalIServiceManager() throws ReflectiveOperationException {
         Method method = ServiceManager.class.getDeclaredMethod("getIServiceManager");
         method.setAccessible(true);
         return Objects.requireNonNull((IServiceManager) method.invoke(null));
     }
 
-    public static void setDefaultServiceManager(IServiceManager serviceManager) throws ReflectiveOperationException {
+    private static void setDefaultServiceManager(IServiceManager serviceManager) throws ReflectiveOperationException {
         Field field = ServiceManager.class.getDeclaredField("sServiceManager");
         field.setAccessible(true);
         field.set(null, serviceManager);
     }
 
+    // Pie
     @Override
     public IBinder getService(String name) throws RemoteException {
         return callback.getService(name, original.getService(name));
@@ -56,6 +65,17 @@ public class ServiceManagerProxy implements IServiceManager {
     @Override
     public void setPermissionController(IPermissionController controller) throws RemoteException {
         original.setPermissionController(controller);
+    }
+
+    // Oreo
+    @Override
+    public void addService(String name, IBinder service, boolean allowIsolated) throws RemoteException {
+        original.addService(name, callback.addService(name, service), allowIsolated);
+    }
+
+    @Override
+    public String[] listServices() throws RemoteException {
+        return original.listServices();
     }
 
     @Override
