@@ -14,9 +14,15 @@ public class ProxyBinder extends Binder {
         this.callback = callback;
     }
 
+    // for other module to reflect original binder
+    @SuppressWarnings("unused")
+    public Binder getOriginal() {
+        return original;
+    }
+
     @Override
     public IInterface queryLocalInterface(String descriptor) {
-        return original.queryLocalInterface(descriptor);
+        return null;
     }
 
     @Override

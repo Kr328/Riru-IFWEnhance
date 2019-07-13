@@ -5,6 +5,7 @@ import android.content.pm.IPackageManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+import com.github.kr328.ifw.proxy.OriginalExporter;
 import com.github.kr328.ifw.proxy.ProxyBinderFactory;
 import com.github.kr328.ifw.proxy.ServiceManagerProxy;
 import com.github.kr328.ifw.proxy.StackUtils;
@@ -39,7 +40,8 @@ public class Injector {
                         if ( StackUtils.hasMethodOnStack(Thread.currentThread(), "getCommonServicesLocked") ) {
                             try {
                                 return ProxyBinderFactory.createProxyBinder(original instanceof Binder ? (Binder)original : packageManager,
-                                        new PackageManagerProxy(IPackageManager.Stub.asInterface(original), IActivityManager.Stub.asInterface(activityManager)));
+                                        new PackageManagerProxy(IPackageManager.Stub.asInterface(original),
+                                                IActivityManager.Stub.asInterface(OriginalExporter.exportBinder(activityManager))));
                             } catch (ReflectiveOperationException e) {
                                 Log.w(Constants.TAG, "Proxy PackageManager failure", e);
                             }
