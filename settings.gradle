@@ -1,3 +1,5 @@
 rootProject.name = 'IFWEnhance'
 
 include ':module'
+include 'hideapi'
+

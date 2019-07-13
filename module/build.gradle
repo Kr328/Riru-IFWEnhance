@@ -14,8 +14,6 @@ ndk {
 dex {
     platform = "android-29"
     buildTools = "29.0.0"
-    
-    exclude "android"
 }
 
 magisk {
@@ -23,8 +21,8 @@ magisk {
     
     zip.map(file("src/main/raw/magisk"), "/")
     zip.map(file("$buildDir/outputs/dex/classes.jar"), "/system/framework/boot-ifw-enhance.jar")
-    zip.map(file("$buildDir/outputs/ndk/arm64-v8a/shared") ,"/system/lib64")
-    zip.map(file("$buildDir/outputs/ndk/armeabi-v7a/shared") ,"/system/lib")
+zip.map(file("$buildDir/outputs/ndk/arm64-v8a/shared") ,"/system/lib64")
+zip.map(file("$buildDir/outputs/ndk/armeabi-v7a/shared") ,"/system/lib")
 }
 
 repositories {
@@ -32,4 +30,5 @@ repositories {
 }
 
 dependencies {
+    compileOnly project(":hideapi")
 }

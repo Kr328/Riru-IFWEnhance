@@ -13,16 +13,22 @@ public class ServiceManagerProxy implements IServiceManager {
         IBinder checkService(String name, IBinder original);
     }
 
-    public static void install(Callback callback) throws ReflectiveOperationException {
+    public static synchronized void install(Callback callback) throws ReflectiveOperationException {
+        if ( installed )
+            return;
+
         IServiceManager original = getOriginalIServiceManager();
         if ( original instanceof ServiceManagerProxy )
             return;
 
         setDefaultServiceManager(new ServiceManagerProxy(original, callback));
+
+        installed = true;
     }
 
     private IServiceManager original;
     private Callback callback;
+    private static boolean installed;
 
     private ServiceManagerProxy(IServiceManager original, Callback callback) {
         this.original = original;

@@ -5,7 +5,9 @@ import android.content.pm.IPackageManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
-import com.github.kr328.ifw.proxy.*;
+import com.github.kr328.ifw.proxy.ProxyBinderFactory;
+import com.github.kr328.ifw.proxy.ServiceManagerProxy;
+import com.github.kr328.ifw.proxy.StackUtils;
 
 @SuppressWarnings("unused")
 public class Injector {
