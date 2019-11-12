@@ -36,12 +36,10 @@ public class PackageManagerProxy extends IPackageManager.Stub {
     @Override
     @ReplaceTransact
     public ParceledListSlice<ResolveInfo> queryIntentActivities(Intent intent, String resolvedType, int flags, int userId) throws RemoteException {
-        if ( intentFirewall == null )
+        if (intentFirewall == null)
             return original.queryIntentActivities(intent, resolvedType, flags, userId);
         if (intent == null)
             return original.queryIntentActivities(null, resolvedType, flags, userId);
-        if (intent.getPackage() != null)
-            return original.queryIntentActivities(intent, resolvedType, flags, userId);
         if (intent.getComponent() != null)
             return original.queryIntentActivities(intent, resolvedType, flags, userId);
 
