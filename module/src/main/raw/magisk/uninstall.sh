@@ -2,4 +2,4 @@
 
 RIRU_MODULE_PATH="/data/misc/riru/modules"
 
-rm -rf "$RIRU_MODULE_PATH/ibr"
+rm -rf "$RIRU_MODULE_PATH/ifw_enhance"
