@@ -1,6 +1,0 @@
-id=riru_ifw_enhance
-name=Riru - IFW Enhance
-version=v4
-versionCode=4
-author=Kr328
-description=A module of Riru. Enhance Intent Firewall. [( Riru - Core > 19 && API 26/27/28 ) Required].

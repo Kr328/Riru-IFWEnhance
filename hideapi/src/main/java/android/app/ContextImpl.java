@@ -10,4 +10,8 @@ class ContextImpl extends ContextWrapper {
     public ContextImpl(Context base) {
         super(base);
     }
+
+    final Context getOuterContext() {
+        throw new IllegalArgumentException("Stub!");
+    }
 }

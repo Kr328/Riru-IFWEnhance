@@ -8,7 +8,7 @@ public class ActivityThread {
     private ContextImpl mSystemContext;
     private ContextImpl mSystemUiContext;
 
-    public static ActivityThread currentActivityThread() {
-        throw new IllegalArgumentException("Stub!");
-    }
+    public static ActivityThread currentActivityThread() { throw new IllegalArgumentException("Stub!"); }
+    public ContextImpl getSystemContext() { throw new IllegalArgumentException("Stub!"); }
+    public static Application currentApplication() { throw new IllegalArgumentException("Stub!"); }
 }
