@@ -147,12 +147,13 @@ android {
                     .writeText(moduleFiles.joinToString("\n") + "\n")
 
             fileTree(zipContent)
-                    .matching {
-                        exclude("customize.sh", "verify.sh", "META-INF", "README.md")
-                    }
-                    .filter {
-                        it.isFile
-                    }
+                    .filter { it.isFile }
+                    .filterNot { it.extension in binaryTypes }
+                    .forEach { it.writeText(it.readText().replace("\r\n", "\n")) }
+
+            fileTree(zipContent)
+                    .matching { exclude("customize.sh", "verify.sh", "META-INF", "README.md") }
+                    .filter { it.isFile }
                     .forEach {
                         val sha256sum = MessageDigest.getInstance("SHA-256").digest(it.readBytes())
                         val sha256text = sha256sum.joinToString(separator = "") { b ->
@@ -161,11 +162,6 @@ android {
 
                         File(it.absolutePath + ".sha256sum").writeText(sha256text)
                     }
-
-            zipContent.walk()
-                    .filter { it.isFile }
-                    .filterNot { it.extension in binaryTypes }
-                    .forEach { it.writeText(it.readText().replace("\r\n", "\n")) }
 
             zipTo(zipFile, zipContent)
         }
