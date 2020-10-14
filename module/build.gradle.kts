@@ -17,6 +17,8 @@ val moduleFiles = listOf(
         "system/framework/$riruId.dex"
 )
 
+val binaryTypes = setOf("dex", "so")
+
 android {
     compileSdkVersion(30)
     buildToolsVersion("30.0.2")
@@ -95,8 +97,6 @@ android {
                                 .replace("%%%RIRU_MIN_API_VERSION%%%", "$riruApi")
                                 .replace("%%%RIRU_MIN_VERSION_NAME%%%", riruName)
                     }
-
-                    filter(org.apache.tools.ant.filters.FixCrLfFilter::class.java)
                 }
 
                 from(file("src/main/raw/module.prop")) {
@@ -108,8 +108,6 @@ android {
                                 .replace("%%%MAGISK_AUTHOR%%%", moduleAuthor)
                                 .replace("%%%MAGISK_DESCRIPTION%%%", moduleDescription)
                     }
-
-                    filter(org.apache.tools.ant.filters.FixCrLfFilter::class.java)
                 }
 
                 from(file("src/main/raw/riru/module.prop.new")) {
@@ -124,8 +122,6 @@ android {
                                 .replace("%%%RIRU_API%%%", "$riruApi")
                                 .replace("%%%RURU_MIN_SDK_VERSION%%%", packageApplicationProvider!!.get().minSdkVersion.get().toString())
                     }
-
-                    filter(org.apache.tools.ant.filters.FixCrLfFilter::class.java)
                 }
 
                 from(apkTree) {
@@ -165,6 +161,11 @@ android {
 
                         File(it.absolutePath + ".sha256sum").writeText(sha256text)
                     }
+
+            zipContent.walk()
+                    .filter { it.isFile }
+                    .filterNot { it.extension in binaryTypes }
+                    .forEach { it.writeText(it.readText().replace("\r\n", "\n")) }
 
             zipTo(zipFile, zipContent)
         }
