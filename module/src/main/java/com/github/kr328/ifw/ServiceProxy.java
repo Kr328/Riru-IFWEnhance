@@ -40,15 +40,9 @@ public abstract class ServiceProxy implements InvocationHandler {
                 final String name = (String) args[0];
                 final IBinder service = (IBinder) args[1];
 
-                IBinder result = onAddService(name, service);
+                args[1] = onAddService(name, service);
 
-                args[1] = result;
-
-                method.invoke(original, args);
-
-                onServiceAdded(name, result);
-
-                return result;
+                return method.invoke(original, args);
             }
             case "getService":
                 if ( args.length < 1 ) return method.invoke(original, args);
@@ -66,6 +60,5 @@ public abstract class ServiceProxy implements InvocationHandler {
     }
 
     protected IBinder onAddService(String name, IBinder service) { return service;}
-    protected void onServiceAdded(String name, IBinder service) {}
     protected IBinder onGetService(String name, IBinder service) { return service; }
 }

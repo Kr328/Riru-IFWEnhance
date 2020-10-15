@@ -23,5 +23,6 @@
 -dontobfuscate
 
 -keep class com.github.kr328.ifw.Injector {
-public void inject(java.lang.String);
+    public void inject(java.lang.String);
+    native *** *(...);
 }

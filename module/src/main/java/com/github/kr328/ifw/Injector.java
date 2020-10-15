@@ -1,12 +1,21 @@
 package com.github.kr328.ifw;
 
+import android.app.IActivityManager;
 import android.os.IBinder;
-import android.util.Log;
 import android.os.Process;
+import android.os.ServiceManager;
+import android.util.Log;
 
 @SuppressWarnings({"unused", "RedundantSuppression"})
 public class Injector extends ServiceProxy {
     public static final String TAG = "IFWEnhance";
+    public static final String KEY_ACTIVITY_MANAGER_SERVICE = "original-activity-manager-service";
+
+    private IActivityManager activityManager = null;
+
+    private static native Object getGlobalObject(String key);
+
+    private static native void putGlobalObject(String key, Object value);
 
     public static void inject(String argument) {
         Log.i(TAG, String.format("Uid = %d Pid = %d", Process.myUid(), Process.myPid()));
@@ -23,7 +32,40 @@ public class Injector extends ServiceProxy {
     }
 
     @Override
-    protected void onServiceAdded(String name, IBinder service) {
-        Log.i(TAG, "New Service " + name);
+    protected IBinder onAddService(String name, IBinder service) {
+        try {
+            if ("activity".equals(name)) {
+                synchronized (ServiceManager.class) {
+                    IBinder binder = (IBinder) getGlobalObject(KEY_ACTIVITY_MANAGER_SERVICE);
+
+                    if (binder == null) {
+                        binder = service;
+
+                        putGlobalObject(KEY_ACTIVITY_MANAGER_SERVICE, binder);
+                    }
+
+                    activityManager = IActivityManager.Stub.asInterface(binder);
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Query original AMS failure", e);
+        }
+
+        return service;
+    }
+
+    @Override
+    protected IBinder onGetService(String name, IBinder service) {
+        for (StackTraceElement stack : Thread.currentThread().getStackTrace()) {
+            if ("getCommonServicesLocked".equals(stack.getMethodName())) {
+                if (activityManager != null) {
+                    Log.i(TAG, "Package Manager found");
+                }
+
+                return service;
+            }
+        }
+
+        return service;
     }
 }

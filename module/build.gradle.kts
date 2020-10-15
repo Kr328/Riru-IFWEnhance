@@ -88,7 +88,11 @@ android {
                 into(zipContent)
 
                 from(file("src/main/raw")) {
-                    exclude("riru.sh", "module.prop", "riru/module.prop.new")
+                    exclude("riru.sh", "module.prop", "riru/module.prop.new", "dist-gitattributes")
+                }
+
+                from(file("src/main/raw/dist-gitattributes")) {
+                    rename { ".gitattributes" }
                 }
 
                 from(file("src/main/raw/riru.sh")) {
@@ -171,5 +175,5 @@ android {
 dependencies {
     compileOnly(project(":hideapi"))
 
-    implementation("rikka.ndk:riru:9")
+    implementation("rikka.ndk:riru:9.1")
 }
