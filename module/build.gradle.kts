@@ -31,8 +31,8 @@ android {
         minSdkVersion(26)
         targetSdkVersion(30)
 
-        versionCode = 1
-        versionName = "v1"
+        versionCode = 5
+        versionName = "v5"
 
         externalNativeBuild {
             cmake {

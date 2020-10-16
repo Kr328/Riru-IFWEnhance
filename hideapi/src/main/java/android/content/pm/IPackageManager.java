@@ -8,6 +8,8 @@ import android.os.RemoteException;
 
 public interface IPackageManager extends IInterface {
     abstract class Stub extends Binder implements IPackageManager {
+        static int TRANSACTION_queryIntentActivities = -1;
+
         @Override
         public IBinder asBinder() {
             throw new IllegalArgumentException("Stub!");

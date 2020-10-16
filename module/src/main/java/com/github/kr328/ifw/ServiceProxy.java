@@ -33,7 +33,7 @@ public abstract class ServiceProxy implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         switch (method.getName()) {
             case "addService": {
-                if ( args.length < 2 ) return method.invoke(original, args);
+                if (args.length < 2) return method.invoke(original, args);
                 if (!(args[0] instanceof String)) return method.invoke(original, args);
                 if (!(args[1] instanceof IBinder)) return method.invoke(original, args);
 
@@ -45,7 +45,7 @@ public abstract class ServiceProxy implements InvocationHandler {
                 return method.invoke(original, args);
             }
             case "getService":
-                if ( args.length < 1 ) return method.invoke(original, args);
+                if (args.length < 1) return method.invoke(original, args);
                 if (!(args[0] instanceof String)) return method.invoke(original, args);
 
                 final String n = (String) args[0];
@@ -59,6 +59,11 @@ public abstract class ServiceProxy implements InvocationHandler {
         return method.invoke(original, args);
     }
 
-    protected IBinder onAddService(String name, IBinder service) { return service;}
-    protected IBinder onGetService(String name, IBinder service) { return service; }
+    protected IBinder onAddService(String name, IBinder service) {
+        return service;
+    }
+
+    protected IBinder onGetService(String name, IBinder service) {
+        return service;
+    }
 }

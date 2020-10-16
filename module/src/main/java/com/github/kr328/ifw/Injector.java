@@ -1,6 +1,7 @@
 package com.github.kr328.ifw;
 
 import android.app.IActivityManager;
+import android.content.pm.IPackageManager;
 import android.os.IBinder;
 import android.os.Process;
 import android.os.ServiceManager;
@@ -58,8 +59,24 @@ public class Injector extends ServiceProxy {
     protected IBinder onGetService(String name, IBinder service) {
         for (StackTraceElement stack : Thread.currentThread().getStackTrace()) {
             if ("getCommonServicesLocked".equals(stack.getMethodName())) {
-                if (activityManager != null) {
+                if ("package".equals(name) && activityManager != null) {
                     Log.i(TAG, "Package Manager found");
+
+                    try {
+                        IntentFirewall firewall = IntentFirewall.fromActivityManager(activityManager);
+
+                        PackageProxy proxy =  new PackageProxy(
+                                service,
+                                IPackageManager.Stub.asInterface(service),
+                                firewall
+                        );
+
+                        Log.i(TAG, "Package Manager replaced");
+
+                        return proxy;
+                    } catch (Exception e) {
+                        Log.e(TAG, "Proxy Package Manager failure", e);
+                    }
                 }
 
                 return service;
