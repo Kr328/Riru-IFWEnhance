@@ -76,6 +76,8 @@ android {
         val zipFile = buildDir.resolve("outputs/$prefix-$name.zip")
         val zipContent = buildDir.resolve("intermediates/magisk/$name")
         val apkFile = this.outputs.first()?.outputFile ?: error("apk not found")
+        val minSdkVersion = packageApplicationProvider?.get()?.minSdkVersion?.get() ?: error("invalid min sdk version")
+        val regexPlaceholder = Regex("%%%(\\S+)%%%")
 
         task.doLast {
             zipContent.deleteRecursively()
@@ -97,20 +99,31 @@ android {
 
                 from(file("src/main/raw/riru.sh")) {
                     filter { line ->
-                        line.replace("%%%RIRU_MODULE_ID%%%", riruId)
-                                .replace("%%%RIRU_MIN_API_VERSION%%%", "$riruApi")
-                                .replace("%%%RIRU_MIN_VERSION_NAME%%%", riruName)
+                        line.replace(regexPlaceholder) {
+                            when (it.groupValues[1]) {
+                                "RIRU_MODULE_ID" -> riruId
+                                "RIRU_MIN_API_VERSION" -> riruApi.toString()
+                                "RIRU_MIN_VERSION_NAME" -> riruName
+                                "RURU_MIN_SDK_VERSION" -> minSdkVersion.toString()
+                                else -> ""
+                            }
+                        }
                     }
                 }
 
                 from(file("src/main/raw/module.prop")) {
                     filter { line ->
-                        line.replace("%%%MAGISK_ID%%%", moduleId)
-                                .replace("%%%MAIGKS_NAME%%%", moduleName)
-                                .replace("%%%MAGISK_VERSION_NAME%%%", versionName!!)
-                                .replace("%%%MAGISK_VERSION_CODE%%%", "$versionCode")
-                                .replace("%%%MAGISK_AUTHOR%%%", moduleAuthor)
-                                .replace("%%%MAGISK_DESCRIPTION%%%", moduleDescription)
+                        line.replace(regexPlaceholder) {
+                            when (it.groupValues[1]) {
+                                "MAGISK_ID" -> moduleId
+                                "MAIGKS_NAME" -> moduleName
+                                "MAGISK_VERSION_NAME" -> versionName!!
+                                "MAGISK_VERSION_CODE" -> versionCode.toString()
+                                "MAGISK_AUTHOR" -> moduleAuthor
+                                "MAGISK_DESCRIPTION" -> moduleDescription
+                                else -> ""
+                            }
+                        }
                     }
                 }
 
@@ -118,13 +131,17 @@ android {
                     into("riru/")
 
                     filter { line ->
-                        line.replace("%%%RIRU_NAME%%%", moduleName.removePrefix("Riru - "))
-                                .replace("%%%RIRU_VERSION_NAME%%%", versionName!!)
-                                .replace("%%%RIRU_VERSION_CODE%%%", "$versionCode")
-                                .replace("%%%RIRU_AUTHOR%%%", moduleAuthor)
-                                .replace("%%%RIRU_DESCRIPTION%%%", moduleDescription)
-                                .replace("%%%RIRU_API%%%", "$riruApi")
-                                .replace("%%%RURU_MIN_SDK_VERSION%%%", packageApplicationProvider!!.get().minSdkVersion.get().toString())
+                        line.replace(regexPlaceholder) {
+                            when (it.groupValues[1]) {
+                                "RIRU_NAME" -> moduleName.removePrefix("Riru - ")
+                                "RIRU_VERSION_NAME" -> versionName!!
+                                "RIRU_VERSION_CODE" -> versionCode.toString()
+                                "RIRU_AUTHOR" -> moduleAuthor
+                                "RIRU_DESCRIPTION" -> moduleDescription
+                                "RIRU_API" -> riruApi.toString()
+                                else -> ""
+                            }
+                        }
                     }
                 }
 
