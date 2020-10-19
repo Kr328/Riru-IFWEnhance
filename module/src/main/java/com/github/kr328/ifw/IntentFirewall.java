@@ -5,8 +5,8 @@ import android.content.pm.ApplicationInfo;
 import android.util.Log;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 public class IntentFirewall {
     private Object intentFirewall;
@@ -25,16 +25,13 @@ public class IntentFirewall {
         result.checkStartActivity = result.intentFirewall.getClass().getDeclaredMethod("checkStartActivity",
                 Intent.class, int.class, int.class, String.class, ApplicationInfo.class);
 
-        if (result.checkStartActivity == null)
-            throw new NoSuchMethodException("Unable to get checkStartActivity");
-
         return result;
     }
 
     public boolean checkStartActivity(Intent intent, int callerUid, int callerPid, String resolvedType, ApplicationInfo resolvedApp) {
         try {
-            return (boolean) this.checkStartActivity.invoke(intentFirewall, intent, callerUid, callerPid, resolvedType, resolvedApp);
-        } catch (IllegalAccessException | InvocationTargetException e) {
+            return (boolean) Objects.requireNonNull(this.checkStartActivity.invoke(intentFirewall, intent, callerUid, callerPid, resolvedType, resolvedApp));
+        } catch (Exception e) {
             Log.e(Injector.TAG, "Call IntentFirewall failure", e);
             return true;
         }

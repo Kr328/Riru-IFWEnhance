@@ -2,6 +2,7 @@ package com.github.kr328.ifw;
 
 import android.app.IActivityManager;
 import android.content.pm.IPackageManager;
+import android.os.Binder;
 import android.os.IBinder;
 import android.os.Process;
 import android.os.ServiceManager;
@@ -65,11 +66,8 @@ public class Injector extends ServiceProxy {
                     try {
                         IntentFirewall firewall = IntentFirewall.fromActivityManager(activityManager);
 
-                        PackageProxy proxy =  new PackageProxy(
-                                service,
-                                IPackageManager.Stub.asInterface(service),
-                                firewall
-                        );
+                        Binder proxy = ProxyFactory.instance(service,
+                                new PackageProxy(IPackageManager.Stub.asInterface(service), firewall));
 
                         Log.i(TAG, "Package Manager replaced");
 

@@ -34,6 +34,8 @@ android {
         versionCode = 5
         versionName = "v5"
 
+        multiDexEnabled = false
+
         externalNativeBuild {
             cmake {
                 arguments(
