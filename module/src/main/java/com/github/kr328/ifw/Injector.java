@@ -5,19 +5,13 @@ import android.content.pm.IPackageManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.Process;
-import android.os.ServiceManager;
 import android.util.Log;
 
 @SuppressWarnings({"unused", "RedundantSuppression"})
 public class Injector extends ServiceProxy {
     public static final String TAG = "IFWEnhance";
-    public static final String KEY_ACTIVITY_MANAGER_SERVICE = "original-activity-manager-service";
 
     private IActivityManager activityManager = null;
-
-    private static native Object getGlobalObject(String key);
-
-    private static native void putGlobalObject(String key, Object value);
 
     public static void inject(String argument) {
         Log.i(TAG, String.format("Uid = %d Pid = %d", Process.myUid(), Process.myPid()));
@@ -35,20 +29,12 @@ public class Injector extends ServiceProxy {
 
     @Override
     protected IBinder onAddService(String name, IBinder service) {
+        if (!name.equals("activity"))
+            return service;
+
         try {
-            if ("activity".equals(name)) {
-                synchronized (ServiceManager.class) {
-                    IBinder binder = (IBinder) getGlobalObject(KEY_ACTIVITY_MANAGER_SERVICE);
-
-                    if (binder == null) {
-                        binder = service;
-
-                        putGlobalObject(KEY_ACTIVITY_MANAGER_SERVICE, binder);
-                    }
-
-                    activityManager = IActivityManager.Stub.asInterface(binder);
-                }
-            }
+            activityManager = (IActivityManager) ObjectResolver
+                    .resolve(service, "com.android.server.am.ActivityManagerService", 30);
         } catch (Exception e) {
             Log.e(TAG, "Query original AMS failure", e);
         }

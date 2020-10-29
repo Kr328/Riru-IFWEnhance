@@ -28,14 +28,6 @@ static void *dex;
 static size_t dex_size;
 static RiruApiV9 *api;
 
-static JNIEXPORT jobject JNICALL Java_com_github_kr328_ifw_Injector_getGlobalObject(JNIEnv *env, jclass clazz, jstring key);
-static JNIEXPORT void JNICALL Java_com_github_kr328_ifw_Injector_putGlobalObject(JNIEnv *env, jclass clazz, jstring key, jobject value);
-
-static JNINativeMethod gNativeMethods[] = {
-        {"getGlobalObject", "(Ljava/lang/String;)Ljava/lang/Object;", &Java_com_github_kr328_ifw_Injector_getGlobalObject},
-        {"putGlobalObject", "(Ljava/lang/String;Ljava/lang/Object;)V", &Java_com_github_kr328_ifw_Injector_putGlobalObject},
-};
-
 static int catch_exception(JNIEnv *env) {
     int result = (*env)->ExceptionCheck(env);
 
@@ -46,32 +38,6 @@ static int catch_exception(JNIEnv *env) {
     }
 
     return result;
-}
-
-static jobject Java_com_github_kr328_ifw_Injector_getGlobalObject(JNIEnv *env, jclass clazz, jstring key) {
-    const char *k = (*env)->GetStringUTFChars(env, key, NULL);
-
-    void *obj = api->getGlobalValue(k);
-
-    (*env)->ReleaseStringUTFChars(env, key, k);
-
-    return (jobject) obj;
-}
-
-static void Java_com_github_kr328_ifw_Injector_putGlobalObject(JNIEnv *env, jclass clazz, jstring key, jobject value) {
-    const char *k = (*env)->GetStringUTFChars(env, key, NULL);
-
-    void *obj = api->getGlobalValue(k);
-
-    if ( obj != NULL )
-        (*env)->DeleteGlobalRef(env, (jobject) obj);
-
-    if ( value != NULL )
-        api->putGlobalValue(k, (*env)->NewGlobalRef(env, value));
-    else
-        api->putGlobalValue(k, NULL);
-
-    (*env)->ReleaseStringUTFChars(env, key, k);
 }
 
 static int load_and_invoke_dex(JNIEnv *env, void *dex_data, long dex_data_length, const char *argument) {
@@ -107,11 +73,6 @@ static int load_and_invoke_dex(JNIEnv *env, void *dex_data, long dex_data_length
     // find method
     jmethodID mLoaded = (*env)->GetStaticMethodID(env, cInject, INJECT_METHOD_NAME,
                                                   INJECT_METHOD_SIGNATURE);
-
-    if ( catch_exception(env) ) return 1;
-
-    // register native methods
-    (*env)->RegisterNatives(env, cInject, gNativeMethods, 2);
 
     if ( catch_exception(env) ) return 1;
 
