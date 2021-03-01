@@ -47,16 +47,13 @@ else
   fi
 fi
 
+# dex
+ui_print "- Extracting dex"
+extract "$ZIPFILE" "system/framework/boot-ifw-enhance.dex" "$MODPATH"
+
 # Riru files
 ui_print "- Extracting extra files"
 [ -d "$RIRU_MODULE_PATH" ] || mkdir -p "$RIRU_MODULE_PATH" || abort "! Can't create $RIRU_MODULE_PATH"
-
-extract "$ZIPFILE" "extras.files" "$TMPDIR"
-
-cat "$TMPDIR/extras.files" >&1 | while read file
-do
-  [ -n "$file" ] && extract "$ZIPFILE" "$file" "$MODPATH"
-done
 
 # set permission just in case
 set_perm "$RIRU_PATH" 0 0 0700
