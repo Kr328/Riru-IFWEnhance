@@ -6,7 +6,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:4.1.2")
+        classpath("com.android.tools.build:gradle:4.1.3")
     }
 }
 
@@ -14,7 +14,6 @@ allprojects {
     repositories {
         google()
         jcenter()
-        maven { url = URI("https://dl.bintray.com/rikkaw/Libraries") }
     }
 }
 

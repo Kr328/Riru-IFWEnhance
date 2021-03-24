@@ -27,29 +27,32 @@ extract "$ZIPFILE" 'post-fs-data.sh' "$MODPATH"
 extract "$ZIPFILE" 'uninstall.sh' "$MODPATH"
 #extract "$ZIPFILE" 'sepolicy.rule' "$MODPATH"
 
+mkdir "$MODPATH/riru"
+
 if [ "$ARCH" = "x86" ] || [ "$ARCH" = "x64" ]; then
   ui_print "- Extracting x86 libraries"
-  extract "$ZIPFILE" "system_x86/lib/libriru_$RIRU_MODULE_ID.so" "$MODPATH"
-  mv "$MODPATH/system_x86/lib" "$MODPATH/system/lib"
+  extract "$ZIPFILE" "riru_x86/lib/libriru_$RIRU_MODULE_ID.so" "$MODPATH"
+  mv "$MODPATH/riru_x86/lib" "$MODPATH/riru/lib"
 
   if [ "$IS64BIT" = true ]; then
     ui_print "- Extracting x64 libraries"
-    extract "$ZIPFILE" "system_x86/lib64/libriru_$RIRU_MODULE_ID.so" "$MODPATH"
-    mv "$MODPATH/system_x86/lib64" "$MODPATH/system/lib64"
+    extract "$ZIPFILE" "riru_x86/lib64/libriru_$RIRU_MODULE_ID.so" "$MODPATH"
+    mv "$MODPATH/riru_x86/lib64" "$MODPATH/riru/lib64"
   fi
+  rmdir $MODPATH/riru_x86
 else
   ui_print "- Extracting arm libraries"
-  extract "$ZIPFILE" "system/lib/libriru_$RIRU_MODULE_ID.so" "$MODPATH"
+  extract "$ZIPFILE" "riru/lib/libriru_$RIRU_MODULE_ID.so" "$MODPATH"
 
   if [ "$IS64BIT" = true ]; then
     ui_print "- Extracting arm64 libraries"
-    extract "$ZIPFILE" "system/lib64/libriru_$RIRU_MODULE_ID.so" "$MODPATH"
+    extract "$ZIPFILE" "riru/lib64/libriru_$RIRU_MODULE_ID.so" "$MODPATH"
   fi
 fi
 
 # dex
 ui_print "- Extracting dex"
-extract "$ZIPFILE" "system/framework/boot-ifw-enhance.dex" "$MODPATH"
+extract "$ZIPFILE" "framework/boot-ifw-enhance.dex" "$MODPATH"
 
 # Riru files
 ui_print "- Extracting extra files"
