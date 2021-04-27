@@ -17,13 +17,13 @@ riru {
 android {
     compileSdkVersion(30)
 
-    ndkVersion = "21.3.6528147"
+    ndkVersion = "23.0.7123448"
 
     defaultConfig {
         applicationId = "com.github.kr328.ifw"
 
-        minSdkVersion(26)
-        targetSdkVersion(30)
+        minSdk = 26
+        targetSdk = 30
 
         versionCode = 7
         versionName = "v7"
