@@ -21,8 +21,7 @@
 
 #define RIRU_TARGET_API 25
 
-#define INJECT_DEX_NAME "boot-ifw-enhance.dex"
-#define INJECT_DEX_PATH "/framework/" INJECT_DEX_NAME
+#define INJECT_DEX_PATH "/runtime/runtime.dex"
 #define INJECT_CLASS_NAME "com.github.kr328.ifw.Injector"
 #define INJECT_METHOD_NAME "inject"
 #define INJECT_METHOD_SIGNATURE "(Ljava/lang/String;)V"
@@ -107,26 +106,24 @@ static void onModuleLoaded() {
         LOGE("magisk path is null");
         return;
     }
-    strcat(path, magisk_path);
-    strcat(path, INJECT_DEX_PATH);
+
+    sprintf(path, "%s/%s", magisk_path, INJECT_DEX_PATH);
 
     int fd = open(path, O_RDONLY);
     if (fd < 0) {
-        LOGE("Open dex file: %s", strerror(errno));
+        LOGE("open dex file: %s", strerror(errno));
 
         return;
     }
 
     struct stat stat;
-
     if (fstat(fd, &stat) < 0) {
-        LOGE("fetch size of dex file: %s", strerror(errno));
+        LOGE("get size of dex file: %s", strerror(errno));
 
         close(fd);
 
         return;
     }
-
 
     dex = malloc(stat.st_size);
     dex_size = stat.st_size;
@@ -176,6 +173,7 @@ EXPORT RiruVersionedModuleInfo *init(Riru *riru) {
     if (riru->riruApiVersion < RIRU_TARGET_API) return NULL;
 
     *riru->allowUnload = true;
+
     magisk_path = strdup(riru->magiskModulePath);
 
     return &module;

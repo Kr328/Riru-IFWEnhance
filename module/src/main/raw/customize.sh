@@ -15,6 +15,7 @@ fi
 extract "$ZIPFILE" 'riru.sh' "$MODPATH"
 . $MODPATH/riru.sh
 
+enforce_install_from_magisk_app
 check_riru_version
 check_architecture
 check_sdk_version
@@ -23,8 +24,8 @@ check_sdk_version
 ui_print "- Extracting module files"
 
 extract "$ZIPFILE" 'module.prop' "$MODPATH"
-extract "$ZIPFILE" 'post-fs-data.sh' "$MODPATH"
-extract "$ZIPFILE" 'uninstall.sh' "$MODPATH"
+#extract "$ZIPFILE" 'post-fs-data.sh' "$MODPATH"
+#extract "$ZIPFILE" 'uninstall.sh' "$MODPATH"
 #extract "$ZIPFILE" 'sepolicy.rule' "$MODPATH"
 
 mkdir "$MODPATH/riru"
@@ -50,23 +51,9 @@ else
   fi
 fi
 
-# dex
+# extract runtime dex
 ui_print "- Extracting dex"
-extract "$ZIPFILE" "framework/boot-ifw-enhance.dex" "$MODPATH"
-
-# Riru files
-ui_print "- Extracting extra files"
-[ -d "$RIRU_MODULE_PATH" ] || mkdir -p "$RIRU_MODULE_PATH" || abort "! Can't create $RIRU_MODULE_PATH"
-
-# set permission just in case
-set_perm "$RIRU_PATH" 0 0 0700
-set_perm "$RIRU_PATH/modules" 0 0 0700
-set_perm "$RIRU_MODULE_PATH" 0 0 0700
-set_perm "$RIRU_MODULE_PATH/bin" 0 0 0700
-
-rm -f "$RIRU_MODULE_PATH/module.prop.new"
-extract "$ZIPFILE" 'riru/module.prop.new' "$RIRU_MODULE_PATH" true
-set_perm "$RIRU_MODULE_PATH/module.prop.new" 0 0 0600
+extract "$ZIPFILE" "runtime/runtime.dex" "$MODPATH"
 
 # set permissions
 ui_print "- Setting permissions"

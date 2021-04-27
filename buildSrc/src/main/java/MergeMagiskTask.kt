@@ -3,9 +3,6 @@ import org.gradle.api.tasks.Copy
 
 abstract class MergeMagiskTask : Copy() {
     fun fromApplicationVariant(v: ApplicationVariant) {
-        val extension = project.extensions.getByType(RiruExtension::class.java)
-        val dexName = extension.dexName.ifEmpty { "${extension.riruId}.dex" }
-
         into(project.generatedMagiskDir(v))
 
         from(project.extractedApkDir(v)) {
@@ -17,7 +14,7 @@ abstract class MergeMagiskTask : Copy() {
                     .replace("lib/x86", "riru_x86/lib")
                     .replace("lib/arm64-v8a", "riru/lib64")
                     .replace("lib/armeabi-v7a", "riru/lib")
-                    .replace("classes.dex", "framework/$dexName")
+                    .replace("classes.dex", "runtime/runtime.dex")
             }
         }
     }

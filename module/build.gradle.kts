@@ -11,7 +11,6 @@ riru {
     minApiName = "25.0.0"
     description = "A module of Riru. Enhance intent firewall."
     author = "Kr328"
-    dexName = "boot-ifw-enhance.dex"
 }
 
 android {
