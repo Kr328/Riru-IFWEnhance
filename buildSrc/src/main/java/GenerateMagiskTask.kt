@@ -1,4 +1,5 @@
 import com.android.build.gradle.api.ApplicationVariant
+import org.apache.tools.ant.filters.FixCrLfFilter
 import org.gradle.api.tasks.Copy
 
 abstract class GenerateMagiskTask : Copy() {
@@ -31,6 +32,8 @@ abstract class GenerateMagiskTask : Copy() {
                 }
             }
         }
+
+        filter(mapOf("eol" to FixCrLfFilter.CrLf.newInstance("lf")), FixCrLfFilter::class.java)
 
         into(project.generatedMagiskDir(variant))
     }

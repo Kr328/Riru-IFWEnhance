@@ -13,11 +13,11 @@ abstract class MergeMagiskTask : Copy() {
 
             eachFile {
                 it.path = it.path
-                    .replace("lib/x86_64", "system_x86/lib64")
-                    .replace("lib/x86", "system_x86/lib")
-                    .replace("lib/arm64-v8a", "system/lib64")
-                    .replace("lib/armeabi-v7a", "system/lib")
-                    .replace("classes.dex", "system/framework/$dexName")
+                    .replace("lib/x86_64", "riru_x86/lib64")
+                    .replace("lib/x86", "riru_x86/lib")
+                    .replace("lib/arm64-v8a", "riru/lib64")
+                    .replace("lib/armeabi-v7a", "riru/lib")
+                    .replace("classes.dex", "framework/$dexName")
             }
         }
     }

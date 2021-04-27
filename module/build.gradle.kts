@@ -7,8 +7,8 @@ plugins {
 riru {
     id = "riru_ifw_enhance"
     name = "Riru - IFW Enhance"
-    minApi = 9
-    minApiName = "v22.0"
+    minApi = 25
+    minApiName = "25.0.0"
     description = "A module of Riru. Enhance intent firewall."
     author = "Kr328"
     dexName = "boot-ifw-enhance.dex"
@@ -69,5 +69,5 @@ android {
 dependencies {
     compileOnly(project(":hideapi"))
 
-    implementation("rikka.ndk:riru:10")
+    implementation("dev.rikka.ndk:riru:25.0.0")
 }
