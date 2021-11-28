@@ -1,72 +1,96 @@
 package com.github.kr328.ifw;
 
-import android.app.IActivityManager;
 import android.content.pm.IPackageManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.Process;
 import android.util.Log;
 
-@SuppressWarnings({"unused", "RedundantSuppression"})
-public class Injector extends ServiceProxy {
+import com.github.kr328.magic.proxy.AIDLProxy;
+import com.github.kr328.magic.proxy.ServiceManagerProxy;
+import com.github.kr328.magic.util.ClassLoaderUtils;
+import com.github.kr328.magic.util.StackUtils;
+import com.github.kr328.zloader.ZygoteLoader;
+
+import java.util.Objects;
+import java.util.Properties;
+
+public class Injector {
     public static final String TAG = "IFWEnhance";
 
-    private IActivityManager activityManager = null;
+    private static boolean initialized;
+    private static Class<?> cPackageProxy;
 
-    public static void inject(String argument) {
-        Log.i(TAG, String.format("Uid = %d Pid = %d", Process.myUid(), Process.myPid()));
+    @SuppressWarnings("unused")
+    public static void main(String processName, Properties properties) {
+        Log.i(TAG, "ProcessName = " + processName);
+        Log.i(TAG, "Uid = " + Process.myUid());
+        Log.i(TAG, "Pid = " + Process.myPid());
 
-        Injector injector = new Injector();
+        if (!ZygoteLoader.PACKAGE_SYSTEM_SERVER.equals(processName)) {
+            return;
+        }
 
         try {
-            injector.install();
+            new ServiceManagerProxy.Builder()
+                    .setAddServiceFilter(Injector::findClassLoader)
+                    .setGetServiceFilter(Injector::replacePackage)
+                    .build()
+                    .install();
 
             Log.i(TAG, "Inject successfully");
         } catch (Exception e) {
-            Log.e(TAG, "Inject failure", e);
+            Log.e(TAG, "Inject: " + e, e);
         }
     }
 
-    @Override
-    protected IBinder onAddService(String name, IBinder service) {
-        if (!name.equals("activity"))
-            return service;
+    private static Binder findClassLoader(String name, Binder service) {
+        if (!initialized && service.getClass().getName().startsWith("com.android.server")) {
+            initialized = true;
 
-        try {
-            activityManager = (IActivityManager) ObjectResolver
-                    .resolve(service, "com.android.server.am.ActivityManagerService", 30);
-        } catch (Exception e) {
-            Log.e(TAG, "Query original AMS failure", e);
-        }
+            try {
+                ClassLoaderUtils.replaceParentClassLoader(
+                        Injector.class.getClassLoader(),
+                        service.getClass().getClassLoader()
+                );
 
-        return service;
-    }
+                Log.d(TAG, "Parent ClassLoader injected");
+            } catch (Throwable e) {
+                Log.e(TAG, "Inject parent ClassLoader: " + e, e);
+            }
 
-    @Override
-    protected IBinder onGetService(String name, IBinder service) {
-        for (StackTraceElement stack : Thread.currentThread().getStackTrace()) {
-            if ("getCommonServicesLocked".equals(stack.getMethodName())) {
-                if ("package".equals(name) && activityManager != null) {
-                    Log.i(TAG, "Package Manager found");
-
-                    try {
-                        IntentFirewall firewall = IntentFirewall.fromActivityManager(activityManager);
-
-                        Binder proxy = ProxyFactory.instance(service,
-                                new PackageProxy(IPackageManager.Stub.asInterface(service), firewall));
-
-                        Log.i(TAG, "Package Manager replaced");
-
-                        return proxy;
-                    } catch (Exception e) {
-                        Log.e(TAG, "Proxy Package Manager failure", e);
-                    }
-                }
-
-                return service;
+            try {
+                cPackageProxy = Objects.requireNonNull(Injector.class.getClassLoader())
+                        .loadClass("com.github.kr328.ifw.PackageProxy");
+            } catch (Exception e) {
+                Log.e(TAG, "Load PackageProxy: " + e);
             }
         }
 
         return service;
+    }
+
+    private static IBinder replacePackage(String name, IBinder original) {
+        if (!"package".equals(name)) {
+            return original;
+        }
+
+        if (cPackageProxy != null && StackUtils.isStacktraceContains("getCommonServicesLocked")) {
+            try {
+                final IPackageManager fallback = IPackageManager.Stub.asInterface(original);
+                final IPackageManager delegated = (IPackageManager) cPackageProxy
+                        .getConstructor(IPackageManager.class)
+                        .newInstance(fallback);
+                final Binder result = AIDLProxy.newServer(IPackageManager.class, fallback, delegated);
+
+                Log.i(TAG, "PackageProxy instanced");
+
+                return result;
+            } catch (Throwable e) {
+                Log.e(TAG, "Proxy package: " + e, e);
+            }
+        }
+
+        return original;
     }
 }

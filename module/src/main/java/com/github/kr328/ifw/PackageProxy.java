@@ -3,27 +3,41 @@ package com.github.kr328.ifw;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.IPackageManager;
+import android.content.pm.PackageManager;
 import android.content.pm.ParceledListSlice;
 import android.content.pm.ResolveInfo;
 import android.os.Binder;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.RemoteException;
-import android.util.Log;
 
-import com.github.kr328.ifw.ProxyFactory.TransactHook;
+import com.android.server.firewall.IntentFirewall;
+import com.github.kr328.magic.proxy.AIDLProxy.TransactProxy;
+import com.github.kr328.magic.util.BinderUtils;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class PackageProxy extends IPackageManager.Stub {
+public class PackageProxy extends IPackageManager.Stub implements IntentFirewall.AMSInterface {
+    private static final HandlerThread thread = new HandlerThread("package_proxy");
+    private static final Handler handler;
+
+    static {
+        thread.start();
+
+        handler = new Handler(thread.getLooper());
+    }
+
     private final IPackageManager original;
     private final IntentFirewall firewall;
 
-    PackageProxy(IPackageManager original, IntentFirewall firewall) {
+    public PackageProxy(IPackageManager original) {
         this.original = original;
-        this.firewall = firewall;
+        this.firewall = new IntentFirewall(this, handler);
     }
 
     @Override
-    @TransactHook
+    @TransactProxy
     public ParceledListSlice<ResolveInfo> queryIntentActivities(Intent intent, String resolvedType, int flags, int userId) throws RemoteException {
         if (firewall == null)
             return original.queryIntentActivities(intent, resolvedType, flags, userId);
@@ -32,35 +46,38 @@ public class PackageProxy extends IPackageManager.Stub {
         if (intent.getComponent() != null)
             return original.queryIntentActivities(intent, resolvedType, flags, userId);
 
-        ParceledListSlice<ResolveInfo> or = original.queryIntentActivities(intent, resolvedType, flags, userId);
+        final ParceledListSlice<ResolveInfo> result = original.queryIntentActivities(intent, resolvedType, flags, userId);
 
         try {
-            ArrayList<ResolveInfo> replaced = new ArrayList<>();
             int callingUid = Binder.getCallingUid();
             int callingPid = Binder.getCallingPid();
-
-            long callingIdentity = Binder.clearCallingIdentity();
-
-            for (ResolveInfo info : or.getList()) {
+            final List<ResolveInfo> filtered = BinderUtils.withEvaluated(() -> result.getList().stream().filter((info) -> {
                 intent.setComponent(ComponentName.createRelative(info.activityInfo.packageName, info.activityInfo.name));
                 intent.setPackage(info.activityInfo.packageName);
 
-                if (firewall.checkStartActivity(intent, callingUid, callingPid, resolvedType, info.activityInfo.applicationInfo))
-                    replaced.add(info);
-            }
+                return firewall.checkStartActivity(intent, callingUid, callingPid, resolvedType, info.activityInfo.applicationInfo);
+            }).collect(Collectors.toList()));
 
-            Binder.restoreCallingIdentity(callingIdentity);
-
-            return new ParceledListSlice<>(replaced);
-        } catch (Exception e) {
-            Log.w(Injector.TAG, "Unknown exception", e);
+            return new ParceledListSlice<>(filtered);
+        } catch (Exception ignored) {
+            // ignore unknown exceptions
         }
 
-        return or;
+        return result;
     }
 
     @Override
     public String[] getPackagesForUid(int uid) throws RemoteException {
         return original.getPackagesForUid(uid);
+    }
+
+    @Override
+    public int checkComponentPermission(String permission, int pid, int uid, int owningUid, boolean exported) {
+        return PackageManager.PERMISSION_GRANTED;
+    }
+
+    @Override
+    public Object getAMSLock() {
+        return this;
     }
 }

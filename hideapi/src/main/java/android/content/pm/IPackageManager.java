@@ -7,19 +7,20 @@ import android.os.IInterface;
 import android.os.RemoteException;
 
 public interface IPackageManager extends IInterface {
+    ParceledListSlice<ResolveInfo> queryIntentActivities(Intent intent, String resolvedType, int flags, int userId) throws RemoteException;
+
+    String[] getPackagesForUid(int uid) throws RemoteException;
+
     abstract class Stub extends Binder implements IPackageManager {
         static int TRANSACTION_queryIntentActivities = -1;
+
+        public static IPackageManager asInterface(IBinder binder) {
+            throw new IllegalArgumentException("Stub!");
+        }
 
         @Override
         public IBinder asBinder() {
             throw new IllegalArgumentException("Stub!");
         }
-
-        public static IPackageManager asInterface(IBinder binder) {
-            throw new IllegalArgumentException("Stub!");
-        }
     }
-
-    ParceledListSlice<ResolveInfo> queryIntentActivities(Intent intent, String resolvedType, int flags, int userId) throws RemoteException;
-    String[] getPackagesForUid(int uid) throws RemoteException;
 }

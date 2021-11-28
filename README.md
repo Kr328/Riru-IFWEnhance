@@ -4,10 +4,8 @@ A module of [Riru](https://github.com/RikkaApps/Riru). Enhance Intent Firewall.
 
 ## Requirements
 
-* [Riru](https://github.com/RikkaApps/Riru) >= 25.0 installed.
-* Android 9.0 (preview not tested)
-
-
+* [Riru](https://github.com/RikkaApps/Riru) >= 26.0 installed.
+* Android 8.0+
 
 ## Feature
 
@@ -24,7 +22,6 @@ Enhance Intent Firewall
 2. Configure local.properties 
 
    ```properties
-   ndk.dir=/path/to/android/ndk
    sdk.dir=/path/to/android/sdk
    ```
 
@@ -34,5 +31,5 @@ Enhance Intent Firewall
     ./gradlew module:assembleRelease
     ```
     
-4. Pick `riru-ifw-enhance.zip` from `module/build/outputs`
+4. Pick `riru-ifw-enhance-<version>.zip` from `module/build/outputs/<variant>`
 

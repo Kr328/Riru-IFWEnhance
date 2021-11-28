@@ -1,72 +1,45 @@
+import com.github.kr328.zloader.gradle.ZygoteLoader.*
+import com.github.kr328.zloader.gradle.tasks.PackageMagiskTask
+import com.github.kr328.zloader.gradle.util.toCapitalized
+
 plugins {
     id("com.android.application")
-    id("hideapi-redefine")
-    id("riru")
-}
-
-riru {
-    id = "riru_ifw_enhance"
-    name = "Riru - IFW Enhance"
-    minApi = 25
-    minApiName = "25.0.0"
-    description = "A module of Riru. Enhance intent firewall."
-    author = "Kr328"
-}
-
-android {
-    compileSdkVersion(30)
-
-    ndkVersion = "23.0.7123448"
-
-    defaultConfig {
-        applicationId = "com.github.kr328.ifw"
-
-        minSdk = 26
-        targetSdk = 30
-
-        versionCode = 8
-        versionName = "v8"
-
-        multiDexEnabled = false
-
-        externalNativeBuild {
-            cmake {
-                arguments(
-                        "-DRIRU_NAME:STRING=${riru.name}",
-                        "-DRIRU_MODULE_ID:STRING=${riru.riruId}",
-                        "-DRIRU_MODULE_VERSION_CODE:INTEGER=$versionCode",
-                        "-DRIRU_MODULE_VERSION_NAME:STRING=$versionName"
-                )
-            }
-        }
-    }
-
-    buildFeatures {
-        buildConfig = false
-        prefab = true
-    }
-
-    buildTypes {
-        named("release") {
-            isMinifyEnabled = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
-    externalNativeBuild {
-        cmake {
-            path = file("src/main/cpp/CMakeLists.txt")
-        }
-    }
+    id("zygote-loader")
 }
 
 dependencies {
     compileOnly(project(":hideapi"))
 
-    implementation("dev.rikka.ndk:riru:25.0.0")
+    implementation(deps.magic.library)
+}
+
+zygote {
+    val moduleId = "ifw_enhance"
+    val moduleName = "IFW Enhance"
+    val moduleDescription = "Enhance Intent Firewall."
+    val moduleAuthor = "Kr328"
+    val moduleEntrypoint = "com.github.kr328.ifw.Injector"
+
+    packages(PACKAGE_SYSTEM_SERVER)
+
+    riru {
+        id = "riru_$moduleId"
+        name = "Riru - $moduleName"
+        author = moduleAuthor
+        description = moduleDescription
+        entrypoint = moduleEntrypoint
+    }
+}
+
+androidComponents {
+    onVariants {
+        val name = it.name
+        val flavorName = it.flavorName!!
+
+        afterEvaluate {
+            (tasks[PackageMagiskTask.taskName(name)] as Zip).apply {
+                archiveBaseName.set("$flavorName-ifw-enhance-${android.defaultConfig.versionName}")
+            }
+        }
+    }
 }
