@@ -1,6 +1,4 @@
-import com.github.kr328.zloader.gradle.ZygoteLoader.*
-import com.github.kr328.zloader.gradle.tasks.PackageMagiskTask
-import com.github.kr328.zloader.gradle.util.toCapitalized
+import com.github.kr328.zloader.gradle.ZygoteLoader.PACKAGE_SYSTEM_SERVER
 
 plugins {
     id("com.android.application")
@@ -28,18 +26,6 @@ zygote {
         author = moduleAuthor
         description = moduleDescription
         entrypoint = moduleEntrypoint
-    }
-}
-
-androidComponents {
-    onVariants {
-        val name = it.name
-        val flavorName = it.flavorName!!
-
-        afterEvaluate {
-            (tasks[PackageMagiskTask.taskName(name)] as Zip).apply {
-                archiveBaseName.set("$flavorName-ifw-enhance-${android.defaultConfig.versionName}")
-            }
-        }
+        archiveName = "riru-${moduleId.replace('_', '-')}-${android.defaultConfig.versionName}"
     }
 }

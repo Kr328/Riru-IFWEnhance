@@ -23,9 +23,9 @@
 -dontobfuscate
 
 -keep class com.github.kr328.ifw.Injector {
-    public static void main(java.lang.String, java.util.Properties);
+    public static void main(...);
 }
 
--keep class com.github.kr328.ifw.PackageProxy {
+-keep class com.github.kr328.ifw.Firewall$IntentFirewallWrapper {
     public <init>(...);
 }
