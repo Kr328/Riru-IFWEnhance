@@ -26,8 +26,8 @@ subprojects {
     extensions.configure<BaseExtension> {
         val minSdkVersion = 26
         val targetSdkVersion = 31
-        val buildVersionName = "v10"
-        val buildVersionCode = 10
+        val buildVersionName = "v11"
+        val buildVersionCode = 11
 
         compileSdkVersion(targetSdkVersion)
 
