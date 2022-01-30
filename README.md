@@ -1,6 +1,6 @@
 # Riru - IFWEnhance
 
-A module of [Riru](https://github.com/RikkaApps/Riru). Enhance Intent Firewall.
+A module of [Riru](https://github.com/RikkaApps/Riru)/[Zygisk](https://github.com/topjohnwu/zygisk-module-sample). Enhance Intent Firewall.
 
 ## Requirements
 
