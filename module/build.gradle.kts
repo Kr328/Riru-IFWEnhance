@@ -27,6 +27,7 @@ zygote {
         description = moduleDescription
         entrypoint = moduleEntrypoint
         archiveName = "riru-${moduleId.replace('_', '-')}-${android.defaultConfig.versionName}"
+        updateJson = "https://github.com/Kr328/Riru-IFWEnhance/releases/latest/download/$id.json"
     }
 
     zygisk {
@@ -36,5 +37,6 @@ zygote {
         description = moduleDescription
         entrypoint = moduleEntrypoint
         archiveName = "zygisk-${moduleId.replace('_', '-')}-${android.defaultConfig.versionName}"
+        updateJson = "https://github.com/Kr328/Riru-IFWEnhance/releases/latest/download/$id.json"
     }
 }
