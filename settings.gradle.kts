@@ -10,7 +10,7 @@ dependencyResolutionManagement {
     versionCatalogs {
         create("deps") {
             val agp = "7.1.1"
-            val zloader = "1.11"
+            val zloader = "2.0"
             val magic = "1.4"
 
             alias("build-android").to("com.android.tools.build:gradle:$agp")
