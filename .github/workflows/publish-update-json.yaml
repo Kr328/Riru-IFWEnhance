@@ -25,10 +25,15 @@ jobs:
             cat $FILES 2>/dev/null | dos2unix | sed -n "$REGEX" | head -n 1
           }
 
-          mkdir -p assets
-          mkdir -p publish
-
           publish_root="publish"
+          changelog_file="$publish_root/changelog.md"
+
+          mkdir -p $publish_root
+
+          echo '${{ github.event.release.body }}' > "$changelog_file"
+
+          mkdir -p assets
+
           count=0
 
           echo "Fetching release assets"
@@ -52,7 +57,7 @@ jobs:
               version="$(grep_prop version "$extract_root/module.prop")"
               versionCode="$(grep_prop versionCode "$extract_root/module.prop")"
               zipUrl="$url"
-              changelog="${{ github.event.release.html_url }}"
+              changelog="${{ github.event.repository.html_url }}/releases/download/${{ github.event.release.tag_name }}/changelog.md"
               jsonFileName="$(echo -n "$id" | sed "s/_/-/g")"
 
               echo "-------- Module properties --------"
