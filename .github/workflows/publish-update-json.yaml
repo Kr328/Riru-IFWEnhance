@@ -55,7 +55,7 @@ jobs:
 
               echo "Extract module $FILE_NAME to $EXTRACT_DIR"
 
-              unzip -o -u -d "$EXTRACT_DIR" "$FILE_NAME" module.prop > /dev/null 2>&1 || abort "Unzip $url failed"
+              unzip -o -d "$EXTRACT_DIR" "$FILE_NAME" module.prop > /dev/null 2>&1 || abort "Unzip $url failed"
 
               id="$(grep_prop id "$EXTRACT_DIR/module.prop")"
               version="$(grep_prop version "$EXTRACT_DIR/module.prop")"
