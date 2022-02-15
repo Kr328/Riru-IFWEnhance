@@ -14,9 +14,9 @@ dependencies {
 zygote {
     val moduleId = "ifw-enhance"
     val moduleName = "IFW Enhance"
-    val moduleDescription = "Enhance Intent Firewall."
+    val moduleDescription = "Allows Intent Firewall to filter results of queryIntent(Activities/Services) APIs."
     val moduleAuthor = "Kr328"
-    val moduleEntrypoint = "com.github.kr328.ifw.Injector"
+    val moduleEntrypoint = "com.github.kr328.ifw.Main"
     val versionName = android.defaultConfig.versionName
 
     packages(PACKAGE_SYSTEM_SERVER)

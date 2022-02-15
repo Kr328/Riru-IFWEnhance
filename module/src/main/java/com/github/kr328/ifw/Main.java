@@ -9,7 +9,7 @@ import com.github.kr328.magic.services.ServiceManagerProxy;
 import com.github.kr328.magic.util.StackUtils;
 import com.github.kr328.zloader.ZygoteLoader;
 
-public class Injector {
+public class Main {
     public static final String TAG = "IFWEnhance";
 
     @SuppressWarnings("unused")
@@ -24,7 +24,7 @@ public class Injector {
 
         try {
             new ServiceManagerProxy.Builder()
-                    .setGetServiceFilter(Injector::replacePackage)
+                    .setGetServiceFilter(Main::replacePackage)
                     .build()
                     .install();
 
@@ -40,13 +40,11 @@ public class Injector {
         }
 
         if (StackUtils.isStacktraceContains("getCommonServicesLocked")) {
-            Log.i(TAG, "Replacing");
-
             try {
                 final IPackageManager fallback = IPackageManager.Stub.asInterface(original);
                 return Proxy.FACTORY.create(IPackageManager.Stub.asInterface(original), new Proxy(fallback));
             } catch (Throwable e) {
-                Log.e(TAG, "Replacing package: " + e, e);
+                Log.e(TAG, "Replacing 'package': " + e, e);
             }
         }
 
