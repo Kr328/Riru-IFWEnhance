@@ -24,23 +24,18 @@ subprojects {
     apply(plugin = if (isApp) "com.android.application" else "com.android.library")
 
     extensions.configure<BaseExtension> {
-        val minSdkVersion = 26
-        val targetSdkVersion = 31
-        val buildVersionName = "v15"
-        val buildVersionCode = 15
-
-        compileSdkVersion(targetSdkVersion)
+        compileSdkVersion(31)
 
         defaultConfig {
             if (isApp) {
                 applicationId = "com.github.kr328.ifw"
             }
 
-            minSdk = minSdkVersion
-            targetSdk = targetSdkVersion
+            minSdk = 26
+            targetSdk = 31
 
-            versionName = buildVersionName
-            versionCode = buildVersionCode
+            versionName = "v16"
+            versionCode = 16
 
             if (!isApp) {
                 consumerProguardFiles("consumer-rules.pro")
