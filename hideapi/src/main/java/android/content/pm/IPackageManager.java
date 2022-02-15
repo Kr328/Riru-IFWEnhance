@@ -25,6 +25,13 @@ public interface IPackageManager extends IInterface {
             int userId
     ) throws RemoteException;
 
+    ParceledListSlice<ResolveInfo> queryIntentServices(
+            Intent intent,
+            String resolvedType,
+            int flags,
+            int userId
+    ) throws RemoteException;
+
     abstract class Stub extends Binder implements IPackageManager {
         public static IPackageManager asInterface(IBinder binder) {
             throw new IllegalArgumentException("Stub!");
