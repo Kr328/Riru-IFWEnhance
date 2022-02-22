@@ -37,7 +37,7 @@ public final class Firewall {
             this$0.setAccessible(true);
             final Object ams = this$0.get(instance);
 
-            final Field intentFirewall = ams.getClass().getDeclaredField("mIntentFirewall");
+            final Field intentFirewall = Reflections.getDeclaredFieldHierarchy(ams.getClass(), "mIntentFirewall");
             intentFirewall.setAccessible(true);
             final Object firewall = intentFirewall.get(ams);
 
