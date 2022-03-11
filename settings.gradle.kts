@@ -1,21 +1,35 @@
 @file:Suppress("UnstableApiUsage")
 
-enableFeaturePreview("VERSION_CATALOGS")
-
 rootProject.name = "IFW Enhance"
 
 include(":module", ":hideapi")
 
+pluginManagement {
+    repositories {
+        maven(url = "https://maven.kr328.app/releases")
+        mavenCentral()
+        google()
+        mavenLocal()
+    }
+}
+
 dependencyResolutionManagement {
+    repositories {
+        maven(url = "https://maven.kr328.app/releases")
+        mavenCentral()
+        google()
+        mavenLocal()
+    }
     versionCatalogs {
         create("deps") {
-            val agp = "7.1.1"
-            val zloader = "2.3"
+            val agp = "7.1.2"
+            val zloader = "2.5"
             val magic = "1.4"
 
-            alias("build-android").to("com.android.tools.build:gradle:$agp")
-            alias("build-zloader").to("com.github.kr328.zloader:gradle-plugin:$zloader")
-            alias("magic-library").to("com.github.kr328.magic:library:$magic")
+            plugin("android-application", "com.android.application").version(agp)
+            plugin("android-library", "com.android.library").version(agp)
+            plugin("zygote-loader", "com.github.kr328.gradle.zygote").version(zloader)
+            library("magic-library", "com.github.kr328.magic", "library").version(magic)
         }
     }
 }

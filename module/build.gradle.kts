@@ -1,8 +1,8 @@
-import com.github.kr328.zloader.gradle.ZygoteLoader.PACKAGE_SYSTEM_SERVER
+import com.github.kr328.gradle.zygote.ZygoteLoader
 
 plugins {
-    id("com.android.application")
-    id("zygote-loader")
+    alias(deps.plugins.android.application)
+    alias(deps.plugins.zygote.loader)
 }
 
 dependencies {
@@ -19,7 +19,7 @@ zygote {
     val moduleEntrypoint = "com.github.kr328.ifw.Main"
     val versionName = android.defaultConfig.versionName
 
-    packages(PACKAGE_SYSTEM_SERVER)
+    packages(ZygoteLoader.PACKAGE_SYSTEM_SERVER)
 
     riru {
         id = "riru-$moduleId".replace('-', '_')

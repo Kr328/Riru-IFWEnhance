@@ -1,24 +1,11 @@
 import com.android.build.gradle.BaseExtension
 
-buildscript {
-    repositories {
-        mavenCentral()
-        google()
-        maven(url = "https://maven.kr328.app/releases")
-    }
-    dependencies {
-        classpath(deps.build.android)
-        classpath(deps.build.zloader)
-    }
+plugins {
+    alias(deps.plugins.android.library) apply false
+    alias(deps.plugins.android.application) apply false
 }
 
 subprojects {
-    repositories {
-        mavenCentral()
-        google()
-        maven(url = "https://maven.kr328.app/releases")
-    }
-
     val isApp = name == "module"
 
     apply(plugin = if (isApp) "com.android.application" else "com.android.library")
@@ -34,8 +21,8 @@ subprojects {
             minSdk = 26
             targetSdk = 31
 
-            versionName = "v17"
-            versionCode = 17
+            versionName = "v18"
+            versionCode = 18
 
             if (!isApp) {
                 consumerProguardFiles("consumer-rules.pro")
