@@ -23,7 +23,7 @@ dependencyResolutionManagement {
     versionCatalogs {
         create("deps") {
             val agp = "7.1.2"
-            val zloader = "2.5"
+            val zloader = "2.6"
             val magic = "1.4"
 
             plugin("android-application", "com.android.application").version(agp)
