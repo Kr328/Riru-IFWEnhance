@@ -6,39 +6,44 @@ plugins {
 }
 
 subprojects {
-    val isApp = name == "module"
+    val configureBaseExtension: Project.(Boolean) -> Unit = { isApp ->
+        extensions.configure<BaseExtension> {
+            compileSdkVersion(31)
 
-    apply(plugin = if (isApp) "com.android.application" else "com.android.library")
+            defaultConfig {
+                if (isApp) {
+                    applicationId = "com.github.kr328.ifw"
+                }
 
-    extensions.configure<BaseExtension> {
-        compileSdkVersion(31)
+                minSdk = 26
+                targetSdk = 31
 
-        defaultConfig {
-            if (isApp) {
-                applicationId = "com.github.kr328.ifw"
+                versionName = "v19"
+                versionCode = 19
+
+                if (!isApp) {
+                    consumerProguardFiles("consumer-rules.pro")
+                }
             }
 
-            minSdk = 26
-            targetSdk = 31
-
-            versionName = "v19"
-            versionCode = 19
-
-            if (!isApp) {
-                consumerProguardFiles("consumer-rules.pro")
-            }
-        }
-
-        buildTypes {
-            named("release") {
-                isMinifyEnabled = isApp
-                isShrinkResources = isApp
-                proguardFiles(
-                    getDefaultProguardFile("proguard-android-optimize.txt"),
-                    "proguard-rules.pro"
-                )
+            buildTypes {
+                named("release") {
+                    isMinifyEnabled = isApp
+                    isShrinkResources = isApp
+                    proguardFiles(
+                        getDefaultProguardFile("proguard-android-optimize.txt"),
+                        "proguard-rules.pro"
+                    )
+                }
             }
         }
+    }
+
+    plugins.withId("com.android.application") {
+        configureBaseExtension(true)
+    }
+    plugins.withId("com.android.library") {
+        configureBaseExtension(false)
     }
 }
 
