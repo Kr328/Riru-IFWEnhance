@@ -1,14 +1,14 @@
 import com.github.kr328.gradle.zygote.ZygoteLoader
 
 plugins {
-    alias(deps.plugins.android.application)
-    alias(deps.plugins.zygote.loader)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.zygote.loader)
 }
 
 dependencies {
     compileOnly(project(":hideapi"))
 
-    implementation(deps.magic.library)
+    implementation(libs.magic.library)
 }
 
 zygote {

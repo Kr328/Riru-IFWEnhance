@@ -21,7 +21,7 @@ dependencyResolutionManagement {
         mavenLocal()
     }
     versionCatalogs {
-        create("deps") {
+        create("libs") {
             val agp = "7.1.2"
             val zloader = "2.6"
             val magic = "1.4"
