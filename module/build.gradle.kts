@@ -1,8 +1,8 @@
 import com.github.kr328.gradle.zygote.ZygoteLoader
 
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.zygote.loader)
+    id("com.android.application")
+    id("com.github.kr328.gradle.zygote")
 }
 
 dependencies {

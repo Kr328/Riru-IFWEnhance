@@ -1,13 +1,22 @@
+import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 
 plugins {
-    alias(libs.plugins.android.library) apply false
-    alias(libs.plugins.android.application) apply false
+    val agp = "7.1.2"
+    val zygote = "2.6"
+
+    id("com.android.library") version agp apply false
+    id("com.android.application") version agp apply false
+    id("com.github.kr328.gradle.zygote") version zygote apply false
 }
 
 subprojects {
-    val configureBaseExtension: Project.(Boolean) -> Unit = { isApp ->
+    plugins.withId("com.android.base") {
         extensions.configure<BaseExtension> {
+            val isApp = this is AppExtension
+
+            println("Configure $name: isApp = $isApp")
+
             compileSdkVersion(31)
 
             defaultConfig {
@@ -37,13 +46,6 @@ subprojects {
                 }
             }
         }
-    }
-
-    plugins.withId("com.android.application") {
-        configureBaseExtension(true)
-    }
-    plugins.withId("com.android.library") {
-        configureBaseExtension(false)
     }
 }
 
