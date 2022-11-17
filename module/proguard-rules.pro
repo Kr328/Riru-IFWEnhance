@@ -22,7 +22,7 @@
 
 -dontobfuscate
 
--keep class com.github.kr328.ifw.Injector {
+-keep class com.github.kr328.ifw.Main {
     public static void main(...);
 }
 

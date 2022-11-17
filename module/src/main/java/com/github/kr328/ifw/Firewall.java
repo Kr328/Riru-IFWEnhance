@@ -1,14 +1,19 @@
 package com.github.kr328.ifw;
 
 import android.app.ActivityManagerInternal;
+import android.content.ComponentName;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
+import android.content.pm.ResolveInfo;
+import android.os.Binder;
 import android.util.Log;
 
 import com.android.server.LocalServices;
+import com.github.kr328.magic.util.BinderUtils;
 import com.github.kr328.magic.util.ClassLoaderUtils;
 
 import java.lang.reflect.Field;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public final class Firewall {
     private static boolean initialized;
@@ -32,17 +37,19 @@ public final class Firewall {
             this$0.setAccessible(true);
             final Object ams = this$0.get(instance);
 
-            final Field intentFirewall = ams.getClass().getDeclaredField("mIntentFirewall");
+            final Field intentFirewall = Reflections.getDeclaredFieldHierarchy(ams.getClass(), "mIntentFirewall");
             intentFirewall.setAccessible(true);
             final Object firewall = intentFirewall.get(ams);
 
-            final Class<?> wrapper = Firewall.class.getClassLoader().loadClass("com.github.kr328.ifw.Firewall$IntentFirewallWrapper");
+            final Class<?> wrapper = Firewall.class.getClassLoader()
+                    .loadClass("com.github.kr328.ifw.Firewall$IntentFirewallWrapper");
 
-            Firewall.instance = (IntentFirewall) wrapper.getConstructor(firewall.getClass()).newInstance(firewall);
+            Firewall.instance = (IntentFirewall) wrapper.getConstructor(firewall.getClass())
+                    .newInstance(firewall);
 
-            Log.i(Injector.TAG, "IntentFirewall of ActivityManagerService: " + firewall);
+            Log.i(Main.TAG, "IntentFirewall of ActivityManagerService: " + firewall);
         } catch (Throwable e) {
-            Log.e(Injector.TAG, "Get IntentFirewall of ActivityManagerService: " + e, e);
+            Log.e(Main.TAG, "Get IntentFirewall of ActivityManagerService: " + e, e);
         }
     }
 
@@ -55,12 +62,16 @@ public final class Firewall {
     }
 
     public interface IntentFirewall {
-        boolean checkStartActivity(
+        List<ResolveInfo> filterResult(
+                List<ResolveInfo> result,
+                FilterType type,
                 Intent intent,
-                int callerUid, int callerPid,
-                String resolvedType,
-                ApplicationInfo resolvedApp
+                String resolvedType
         );
+
+        enum FilterType {
+            ACTIVITY, SERVICE
+        }
     }
 
     public static class IntentFirewallWrapper implements IntentFirewall {
@@ -71,8 +82,61 @@ public final class Firewall {
         }
 
         @Override
-        public boolean checkStartActivity(Intent intent, int callerUid, int callerPid, String resolvedType, ApplicationInfo resolvedApp) {
-            return impl.checkStartActivity(intent, callerUid, callerPid, resolvedType, resolvedApp);
+        public List<ResolveInfo> filterResult(
+                List<ResolveInfo> result,
+                FilterType type,
+                Intent intent,
+                String resolvedType
+        ) {
+            if (intent == null)
+                return result;
+            if (intent.getComponent() != null)
+                return result;
+
+            try {
+                int callingUid = Binder.getCallingUid();
+                int callingPid = Binder.getCallingPid();
+                String originalPackage = intent.getPackage();
+
+                List<ResolveInfo> filtered = BinderUtils.withEvaluated(() -> result.stream().filter((info) -> {
+                    switch (type) {
+                        case ACTIVITY:
+                            intent.setComponent(ComponentName.createRelative(info.activityInfo.packageName, info.activityInfo.name));
+                            intent.setPackage(info.activityInfo.packageName);
+
+                            return impl.checkStartActivity(
+                                    intent,
+                                    callingUid,
+                                    callingPid,
+                                    resolvedType,
+                                    info.activityInfo.applicationInfo
+                            );
+                        case SERVICE:
+                            intent.setComponent(ComponentName.createRelative(info.serviceInfo.packageName, info.serviceInfo.name));
+                            intent.setPackage(info.serviceInfo.packageName);
+
+                            return impl.checkService(
+                                    new ComponentName(info.serviceInfo.packageName, info.serviceInfo.name),
+                                    intent,
+                                    callingUid,
+                                    callingPid,
+                                    resolvedType,
+                                    info.serviceInfo.applicationInfo
+                            );
+                    }
+
+                    throw new IllegalArgumentException("unreachable");
+                }).collect(Collectors.toList()));
+
+                intent.setComponent(null);
+                intent.setPackage(originalPackage);
+
+                return filtered;
+            } catch (Exception e) {
+                Log.w(Main.TAG, "Filter out intent: " + intent, e);
+            }
+
+            return result;
         }
     }
 }

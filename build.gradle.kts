@@ -1,60 +1,49 @@
+import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 
-buildscript {
-    repositories {
-        mavenCentral()
-        google()
-        maven(url = "https://maven.kr328.app/releases")
-    }
-    dependencies {
-        classpath(deps.build.android)
-        classpath(deps.build.zloader)
-    }
+plugins {
+    val agp = "7.3.1"
+    val zygote = "2.6"
+
+    id("com.android.library") version agp apply false
+    id("com.android.application") version agp apply false
+    id("com.github.kr328.gradle.zygote") version zygote apply false
 }
 
 subprojects {
-    repositories {
-        mavenCentral()
-        google()
-        maven(url = "https://maven.kr328.app/releases")
-    }
+    plugins.withId("com.android.base") {
+        extensions.configure<BaseExtension> {
+            val isApp = this is AppExtension
 
-    val isApp = name == "module"
+            println("Configure $name: isApp = $isApp")
 
-    apply(plugin = if (isApp) "com.android.application" else "com.android.library")
+            compileSdkVersion(33)
 
-    extensions.configure<BaseExtension> {
-        val minSdkVersion = 26
-        val targetSdkVersion = 33
-        val buildVersionName = "v13"
-        val buildVersionCode = 13
+            defaultConfig {
+                if (isApp) {
+                    applicationId = "com.github.kr328.ifw"
+                }
 
-        compileSdkVersion(targetSdkVersion)
+                minSdk = 26
+                targetSdk = 33
 
-        defaultConfig {
-            if (isApp) {
-                applicationId = "com.github.kr328.ifw"
+                versionName = "v19"
+                versionCode = 19
+
+                if (!isApp) {
+                    consumerProguardFiles("consumer-rules.pro")
+                }
             }
 
-            minSdk = minSdkVersion
-            targetSdk = targetSdkVersion
-
-            versionName = buildVersionName
-            versionCode = buildVersionCode
-
-            if (!isApp) {
-                consumerProguardFiles("consumer-rules.pro")
-            }
-        }
-
-        buildTypes {
-            named("release") {
-                isMinifyEnabled = isApp
-                isShrinkResources = isApp
-                proguardFiles(
-                    getDefaultProguardFile("proguard-android-optimize.txt"),
-                    "proguard-rules.pro"
-                )
+            buildTypes {
+                named("release") {
+                    isMinifyEnabled = isApp
+                    isShrinkResources = isApp
+                    proguardFiles(
+                        getDefaultProguardFile("proguard-android-optimize.txt"),
+                        "proguard-rules.pro"
+                    )
+                }
             }
         }
     }
