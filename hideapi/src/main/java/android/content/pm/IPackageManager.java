@@ -15,6 +15,13 @@ public interface IPackageManager extends IInterface {
             int userId
     ) throws RemoteException;
 
+    ParceledListSlice<ResolveInfo> queryIntentActivities(
+            Intent intent,
+            String resolvedType,
+            long flags,
+            int userId
+    ) throws RemoteException;
+
     ParceledListSlice<ResolveInfo> queryIntentActivityOptions(
             ComponentName caller,
             Intent[] specifics,
@@ -25,10 +32,27 @@ public interface IPackageManager extends IInterface {
             int userId
     ) throws RemoteException;
 
+    ParceledListSlice<ResolveInfo> queryIntentActivityOptions(
+            ComponentName caller,
+            Intent[] specifics,
+            String[] specificTypes,
+            Intent intent,
+            String resolvedType,
+            long flags,
+            int userId
+    ) throws RemoteException;
+
     ParceledListSlice<ResolveInfo> queryIntentServices(
             Intent intent,
             String resolvedType,
             int flags,
+            int userId
+    ) throws RemoteException;
+
+    ParceledListSlice<ResolveInfo> queryIntentServices(
+            Intent intent,
+            String resolvedType,
+            long flags,
             int userId
     ) throws RemoteException;
 

@@ -59,6 +59,35 @@ public class Proxy extends IPackageManager.Stub {
 
     @Override
     @TransactProxy
+    public ParceledListSlice<ResolveInfo> queryIntentActivities(
+            Intent intent,
+            String resolvedType,
+            long flags,
+            int userId
+    ) throws RemoteException {
+        final ParceledListSlice<ResolveInfo> result = original.queryIntentActivities(
+                intent,
+                resolvedType,
+                flags,
+                userId
+        );
+
+        if (Firewall.get() == null) {
+            return result;
+        }
+
+        return new ParceledListSlice<>(
+                Firewall.get().filterResult(
+                        result.getList(),
+                        Firewall.IntentFirewall.FilterType.ACTIVITY,
+                        intent,
+                        resolvedType
+                )
+        );
+    }
+
+    @Override
+    @TransactProxy
     public ParceledListSlice<ResolveInfo> queryIntentActivityOptions(
             ComponentName caller,
             Intent[] specifics,
@@ -94,10 +123,75 @@ public class Proxy extends IPackageManager.Stub {
 
     @Override
     @TransactProxy
+    public ParceledListSlice<ResolveInfo> queryIntentActivityOptions(
+            ComponentName caller,
+            Intent[] specifics,
+            String[] specificTypes,
+            Intent intent,
+            String resolvedType,
+            long flags,
+            int userId
+    ) throws RemoteException {
+        final ParceledListSlice<ResolveInfo> result = original.queryIntentActivityOptions(
+                caller,
+                specifics,
+                specificTypes,
+                intent,
+                resolvedType,
+                flags,
+                userId
+        );
+
+        if (Firewall.get() == null) {
+            return result;
+        }
+
+        return new ParceledListSlice<>(
+                Firewall.get().filterResult(
+                        result.getList(),
+                        Firewall.IntentFirewall.FilterType.ACTIVITY,
+                        intent,
+                        resolvedType
+                )
+        );
+    }
+
+
+    @Override
+    @TransactProxy
     public ParceledListSlice<ResolveInfo> queryIntentServices(
             Intent intent,
             String resolvedType,
             int flags,
+            int userId
+    ) throws RemoteException {
+        final ParceledListSlice<ResolveInfo> result = original.queryIntentServices(
+                intent,
+                resolvedType,
+                flags,
+                userId
+        );
+
+        if (Firewall.get() == null) {
+            return result;
+        }
+
+        return new ParceledListSlice<>(
+                Firewall.get().filterResult(
+                        result.getList(),
+                        Firewall.IntentFirewall.FilterType.SERVICE,
+                        intent,
+                        resolvedType
+                )
+        );
+    }
+
+    @Override
+    @TransactProxy
+    public ParceledListSlice<ResolveInfo> queryIntentServices(
+            Intent intent,
+            String resolvedType,
+            long flags,
             int userId
     ) throws RemoteException {
         final ParceledListSlice<ResolveInfo> result = original.queryIntentServices(
