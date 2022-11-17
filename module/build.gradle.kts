@@ -5,6 +5,10 @@ plugins {
     id("com.github.kr328.gradle.zygote")
 }
 
+android {
+    namespace = "com.github.kr328.module"
+}
+
 dependencies {
     compileOnly(project(":hideapi"))
 

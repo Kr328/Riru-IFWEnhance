@@ -2,7 +2,7 @@ import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 
 plugins {
-    val agp = "7.1.2"
+    val agp = "7.3.1"
     val zygote = "2.6"
 
     id("com.android.library") version agp apply false
@@ -17,7 +17,7 @@ subprojects {
 
             println("Configure $name: isApp = $isApp")
 
-            compileSdkVersion(31)
+            compileSdkVersion(33)
 
             defaultConfig {
                 if (isApp) {
@@ -25,7 +25,7 @@ subprojects {
                 }
 
                 minSdk = 26
-                targetSdk = 31
+                targetSdk = 33
 
                 versionName = "v19"
                 versionCode = 19
