@@ -9,13 +9,13 @@ include(":module", ":hideapi")
 dependencyResolutionManagement {
     versionCatalogs {
         create("deps") {
-            val agp = "7.0.4"
-            val zloader = "1.7"
+            val agp = "7.3.1"
+            val zloader = "2.6"
             val magic = "1.4"
 
-            alias("build-android").to("com.android.tools.build:gradle:$agp")
-            alias("build-zloader").to("com.github.kr328.zloader:gradle-plugin:$zloader")
-            alias("magic-library").to("com.github.kr328.magic:library:$magic")
+            library("build-android", "com.android.tools.build", "gradle").version(agp)
+            library("build-zloader", "com.github.kr328.gradle.zygote", "gradle-plugin").version(zloader)
+            library("magic-library", "com.github.kr328.magic", "library").version(magic)
         }
     }
 }

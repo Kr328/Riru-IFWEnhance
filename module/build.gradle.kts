@@ -1,8 +1,8 @@
-import com.github.kr328.zloader.gradle.ZygoteLoader.PACKAGE_SYSTEM_SERVER
+import com.github.kr328.gradle.zygote.ZygoteLoader.PACKAGE_SYSTEM_SERVER;
 
 plugins {
     id("com.android.application")
-    id("zygote-loader")
+    id("com.github.kr328.gradle.zygote")
 }
 
 dependencies {

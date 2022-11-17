@@ -79,4 +79,20 @@ public class Proxy extends IPackageManager.Stub {
 
         return new ParceledListSlice<>(filterResolved(result.getList(), intent, resolvedType));
     }
+
+    @Override
+    @TransactProxy
+    public ParceledListSlice<ResolveInfo> queryIntentActivities(Intent intent, String resolvedType, long flags, int userId) throws RemoteException {
+        final ParceledListSlice<ResolveInfo> result = original.queryIntentActivities(intent, resolvedType, flags, userId);
+
+        return new ParceledListSlice<>(filterResolved(result.getList(), intent, resolvedType));
+    }
+
+    @Override
+    @TransactProxy
+    public ParceledListSlice<ResolveInfo> queryIntentActivityOptions(ComponentName caller, Intent[] specifics, String[] specificTypes, Intent intent, String resolvedType, long flags, int userId) throws RemoteException {
+        final ParceledListSlice<ResolveInfo> result = original.queryIntentActivityOptions(caller, specifics, specificTypes, intent, resolvedType, flags, userId);
+
+        return new ParceledListSlice<>(filterResolved(result.getList(), intent, resolvedType));
+    }
 }
