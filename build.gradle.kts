@@ -3,7 +3,7 @@ import com.android.build.gradle.BaseExtension
 
 plugins {
     val agp = "7.3.1"
-    val zygote = "2.6"
+    val zygote = "2.7"
 
     id("com.android.library") version agp apply false
     id("com.android.application") version agp apply false
