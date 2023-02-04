@@ -48,7 +48,7 @@ public final class Firewall {
                     .newInstance(firewall);
 
             Log.i(Main.TAG, "IntentFirewall of ActivityManagerService: " + firewall);
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             Log.e(Main.TAG, "Get IntentFirewall of ActivityManagerService: " + e, e);
         }
     }
@@ -77,16 +77,16 @@ public final class Firewall {
     public static class IntentFirewallWrapper implements IntentFirewall {
         private final com.android.server.firewall.IntentFirewall impl;
 
-        public IntentFirewallWrapper(com.android.server.firewall.IntentFirewall impl) {
+        public IntentFirewallWrapper(final com.android.server.firewall.IntentFirewall impl) {
             this.impl = impl;
         }
 
         @Override
         public List<ResolveInfo> filterResult(
-                List<ResolveInfo> result,
-                FilterType type,
-                Intent intent,
-                String resolvedType
+                final List<ResolveInfo> result,
+                final FilterType type,
+                final Intent intent,
+                final String resolvedType
         ) {
             if (intent == null)
                 return result;
@@ -94,11 +94,11 @@ public final class Firewall {
                 return result;
 
             try {
-                int callingUid = Binder.getCallingUid();
-                int callingPid = Binder.getCallingPid();
-                String originalPackage = intent.getPackage();
+                final int callingUid = Binder.getCallingUid();
+                final int callingPid = Binder.getCallingPid();
+                final String originalPackage = intent.getPackage();
 
-                List<ResolveInfo> filtered = BinderUtils.withEvaluated(() -> result.stream().filter((info) -> {
+                final List<ResolveInfo> filtered = BinderUtils.withEvaluated(() -> result.stream().filter((info) -> {
                     switch (type) {
                         case ACTIVITY:
                             intent.setComponent(ComponentName.createRelative(info.activityInfo.packageName, info.activityInfo.name));
@@ -132,7 +132,7 @@ public final class Firewall {
                 intent.setPackage(originalPackage);
 
                 return filtered;
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 Log.w(Main.TAG, "Filter out intent: " + intent, e);
             }
 
