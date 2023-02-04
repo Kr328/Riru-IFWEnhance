@@ -12,15 +12,8 @@ import com.github.kr328.magic.aidl.ServerProxyFactory;
 import com.github.kr328.magic.aidl.TransactProxy;
 
 public class Proxy extends IPackageManager.Stub {
-    public static final ServerProxyFactory<IPackageManager, Proxy> FACTORY;
-
-    static {
-        try {
-            FACTORY = ServerProxy.createFactory(IPackageManager.class, Proxy.class, false);
-        } catch (final ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    public static final ServerProxyFactory<IPackageManager, Proxy> FACTORY =
+            ServerProxy.mustCreateFactory(IPackageManager.class, Proxy.class, false);
 
     private final IPackageManager original;
 
