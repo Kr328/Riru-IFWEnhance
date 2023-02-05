@@ -2,8 +2,8 @@ import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 
 plugins {
-    val agp = "7.3.1"
-    val zygote = "2.7"
+    val agp = "7.4.1"
+    val zygote = "3.0"
 
     id("com.android.library") version agp apply false
     id("com.android.application") version agp apply false
@@ -15,8 +15,6 @@ subprojects {
         extensions.configure<BaseExtension> {
             val isApp = this is AppExtension
 
-            println("Configure $name: isApp = $isApp")
-
             compileSdkVersion(33)
 
             defaultConfig {
@@ -27,8 +25,8 @@ subprojects {
                 minSdk = 26
                 targetSdk = 33
 
-                versionName = "v20"
-                versionCode = 20
+                versionName = "v21"
+                versionCode = 21
 
                 if (!isApp) {
                     consumerProguardFiles("consumer-rules.pro")

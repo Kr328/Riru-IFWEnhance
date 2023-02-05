@@ -1,12 +1,12 @@
 package com.github.kr328.ifw;
 
 import android.content.pm.IPackageManager;
-import android.os.IBinder;
+import android.os.Binder;
 import android.os.Process;
 import android.util.Log;
 
 import com.github.kr328.magic.services.ServiceManagerProxy;
-import com.github.kr328.magic.util.StackUtils;
+import com.github.kr328.zloader.BinderInterceptors;
 import com.github.kr328.zloader.ZygoteLoader;
 
 public class Main {
@@ -23,31 +23,23 @@ public class Main {
         }
 
         try {
-            new ServiceManagerProxy.Builder()
-                    .setGetServiceFilter(Main::replacePackage)
-                    .build()
-                    .install();
+            ServiceManagerProxy.install(new ServiceManagerProxy.Interceptor() {
+                @Override
+                public Binder addService(final String name, final Binder service) {
+                    if ("package".equals(name)) {
+                        BinderInterceptors.install(service, next -> {
+                            final IPackageManager original = IPackageManager.Stub.asInterface(next);
+                            return Proxy.FACTORY.create(original, new Proxy(original));
+                        });
+                    }
+
+                    return super.addService(name, service);
+                }
+            });
 
             Log.i(TAG, "Inject successfully");
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Log.e(TAG, "Inject: " + e, e);
         }
-    }
-
-    private static IBinder replacePackage(String name, IBinder original) {
-        if (!"package".equals(name)) {
-            return original;
-        }
-
-        if (StackUtils.isStacktraceContains("getCommonServicesLocked")) {
-            try {
-                final IPackageManager fallback = IPackageManager.Stub.asInterface(original);
-                return Proxy.FACTORY.create(IPackageManager.Stub.asInterface(original), new Proxy(fallback));
-            } catch (Throwable e) {
-                Log.e(TAG, "Replacing 'package': " + e, e);
-            }
-        }
-
-        return original;
     }
 }
