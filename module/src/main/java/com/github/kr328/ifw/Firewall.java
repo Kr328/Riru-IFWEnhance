@@ -5,7 +5,6 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.os.Binder;
-import android.os.Build;
 import android.os.SystemProperties;
 import android.util.Log;
 
@@ -20,7 +19,7 @@ import java.util.stream.Collectors;
 public final class Firewall {
     private static boolean initialized;
     private static IntentFirewall instance;
-    private static final boolean isFlyme9OrAbove = Build.DISPLAY.toUpperCase().contains("FLYME")
+    private static final boolean isFlyme9OrAbove = SystemProperties.get("ro.build.display.id", "unknown").toUpperCase().contains("FLYME")
             && SystemProperties.getInt("ro.build.flyme.version", 0) >= 9;
 
     private static void tryGetIntentFirewall() {
