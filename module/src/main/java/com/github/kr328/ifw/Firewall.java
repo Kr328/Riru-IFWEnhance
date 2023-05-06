@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public final class Firewall {
     private static boolean initialized;
     private static IntentFirewall instance;
-    private static final boolean isFlyme9AndUpper = Build.DISPLAY.toUpperCase().contains("FLYME")
+    private static final boolean isFlyme9OrAbove = Build.DISPLAY.toUpperCase().contains("FLYME")
             && SystemProperties.getInt("ro.build.flyme.version", 0) >= 9;
 
     private static void tryGetIntentFirewall() {
@@ -107,7 +107,7 @@ public final class Firewall {
                         case ACTIVITY:
                             intent.setComponent(ComponentName.createRelative(info.activityInfo.packageName, info.activityInfo.name));
                             intent.setPackage(info.activityInfo.packageName);
-                            if (!isFlyme9AndUpper) {
+                            if (!isFlyme9OrAbove) {
                                 return impl.checkStartActivity(
                                         intent,
                                         callingUid,
@@ -128,7 +128,7 @@ public final class Firewall {
                         case SERVICE:
                             intent.setComponent(ComponentName.createRelative(info.serviceInfo.packageName, info.serviceInfo.name));
                             intent.setPackage(info.serviceInfo.packageName);
-                            if (!isFlyme9AndUpper) {
+                            if (!isFlyme9OrAbove) {
                                 return impl.checkService(
                                         new ComponentName(info.serviceInfo.packageName, info.serviceInfo.name),
                                         intent,
