@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public final class Firewall {
     private static boolean initialized;
     private static IntentFirewall instance;
-    private static boolean isFlyMe;
+    private static boolean isFlyme;
 
     private static void tryGetIntentFirewall() {
         final Object instance = LocalServices.getService(ActivityManagerInternal.class);
@@ -104,7 +104,7 @@ public final class Firewall {
                         case ACTIVITY:
                             intent.setComponent(ComponentName.createRelative(info.activityInfo.packageName, info.activityInfo.name));
                             intent.setPackage(info.activityInfo.packageName);
-                            if (!isFlyMe)
+                            if (!isFlyme) {
                                 try {
                                     return impl.checkStartActivity(
                                             intent,
@@ -114,21 +114,25 @@ public final class Firewall {
                                             info.activityInfo.applicationInfo
                                     );
                                 } catch (NoSuchMethodError e) {
-                                    isFlyMe = true;
+                                    isFlyme = true;
                                     Log.w(Main.TAG, "Filter activity intent: " + intent, e);
+                                    Log.i(Main.TAG, "Switch to Flyme method");
                                 }
-                            if (isFlyMe) return impl.checkStartActivity(
-                                    intent,
-                                    info.activityInfo.packageName,
-                                    callingUid,
-                                    callingPid,
-                                    resolvedType,
-                                    info.activityInfo.applicationInfo
-                            ) != 1;
+                            }
+                            if (isFlyme) {
+                                return impl.checkStartActivity(
+                                        intent,
+                                        info.activityInfo.packageName,
+                                        callingUid,
+                                        callingPid,
+                                        resolvedType,
+                                        info.activityInfo.applicationInfo
+                                ) != 1;
+                            }
                         case SERVICE:
                             intent.setComponent(ComponentName.createRelative(info.serviceInfo.packageName, info.serviceInfo.name));
                             intent.setPackage(info.serviceInfo.packageName);
-                            if (!isFlyMe)
+                            if (!isFlyme) {
                                 try {
                                     return impl.checkService(
                                             new ComponentName(info.serviceInfo.packageName, info.serviceInfo.name),
@@ -139,10 +143,12 @@ public final class Firewall {
                                             info.serviceInfo.applicationInfo
                                     );
                                 } catch (NoSuchMethodError e) {
-                                    isFlyMe = true;
+                                    isFlyme = true;
                                     Log.w(Main.TAG, "Filter service intent: " + intent, e);
+                                    Log.i(Main.TAG, "Switch to Flyme method");
                                 }
-                            if (isFlyMe)
+                            }
+                            if (isFlyme) {
                                 return impl.checkService(
                                         new ComponentName(info.serviceInfo.packageName, info.serviceInfo.name),
                                         intent,
@@ -152,6 +158,7 @@ public final class Firewall {
                                         resolvedType,
                                         info.serviceInfo.applicationInfo
                                 );
+                            }
                     }
 
                     throw new IllegalArgumentException("unreachable");
