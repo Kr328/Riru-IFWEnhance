@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.os.Binder;
+import android.os.Build;
 import android.util.Log;
 
 import com.android.server.LocalServices;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 public final class Firewall {
     private static boolean initialized;
     private static IntentFirewall instance;
-    private static boolean isFlyme;
+    private static final boolean isFlyme = Build.DISPLAY.toUpperCase().contains("FLYME");
 
     private static void tryGetIntentFirewall() {
         final Object instance = LocalServices.getService(ActivityManagerInternal.class);
@@ -105,21 +106,14 @@ public final class Firewall {
                             intent.setComponent(ComponentName.createRelative(info.activityInfo.packageName, info.activityInfo.name));
                             intent.setPackage(info.activityInfo.packageName);
                             if (!isFlyme) {
-                                try {
-                                    return impl.checkStartActivity(
-                                            intent,
-                                            callingUid,
-                                            callingPid,
-                                            resolvedType,
-                                            info.activityInfo.applicationInfo
-                                    );
-                                } catch (NoSuchMethodError e) {
-                                    isFlyme = true;
-                                    Log.w(Main.TAG, "Filter activity intent: " + intent, e);
-                                    Log.i(Main.TAG, "Switch to Flyme method");
-                                }
-                            }
-                            if (isFlyme) {
+                                return impl.checkStartActivity(
+                                        intent,
+                                        callingUid,
+                                        callingPid,
+                                        resolvedType,
+                                        info.activityInfo.applicationInfo
+                                );
+                            } else {
                                 return impl.checkStartActivity(
                                         intent,
                                         info.activityInfo.packageName,
@@ -133,22 +127,15 @@ public final class Firewall {
                             intent.setComponent(ComponentName.createRelative(info.serviceInfo.packageName, info.serviceInfo.name));
                             intent.setPackage(info.serviceInfo.packageName);
                             if (!isFlyme) {
-                                try {
-                                    return impl.checkService(
-                                            new ComponentName(info.serviceInfo.packageName, info.serviceInfo.name),
-                                            intent,
-                                            callingUid,
-                                            callingPid,
-                                            resolvedType,
-                                            info.serviceInfo.applicationInfo
-                                    );
-                                } catch (NoSuchMethodError e) {
-                                    isFlyme = true;
-                                    Log.w(Main.TAG, "Filter service intent: " + intent, e);
-                                    Log.i(Main.TAG, "Switch to Flyme method");
-                                }
-                            }
-                            if (isFlyme) {
+                                return impl.checkService(
+                                        new ComponentName(info.serviceInfo.packageName, info.serviceInfo.name),
+                                        intent,
+                                        callingUid,
+                                        callingPid,
+                                        resolvedType,
+                                        info.serviceInfo.applicationInfo
+                                );
+                            } else {
                                 return impl.checkService(
                                         new ComponentName(info.serviceInfo.packageName, info.serviceInfo.name),
                                         intent,
