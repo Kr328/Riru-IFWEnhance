@@ -20,7 +20,8 @@ import java.util.stream.Collectors;
 public final class Firewall {
     private static boolean initialized;
     private static IntentFirewall instance;
-    private static final boolean isFlyme9AndUpper = Build.DISPLAY.toUpperCase().contains("FLYME") && SystemProperties.getInt("ro.build.flyme.version", 0) >= 9;
+    private static final boolean isFlyme9AndUpper = Build.DISPLAY.toUpperCase().contains("FLYME")
+            && SystemProperties.getInt("ro.build.flyme.version", 0) >= 9;
 
     private static void tryGetIntentFirewall() {
         final Object instance = LocalServices.getService(ActivityManagerInternal.class);
