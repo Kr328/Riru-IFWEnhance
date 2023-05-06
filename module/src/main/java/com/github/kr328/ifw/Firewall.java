@@ -113,7 +113,7 @@ public final class Firewall {
                                             resolvedType,
                                             info.activityInfo.applicationInfo
                                     );
-                                } catch (Exception e) {
+                                } catch (NoSuchMethodError e) {
                                     isFlyMe = true;
                                     Log.w(Main.TAG, "Filter activity intent: " + intent, e);
                                 }
@@ -138,7 +138,7 @@ public final class Firewall {
                                             resolvedType,
                                             info.serviceInfo.applicationInfo
                                     );
-                                } catch (Exception e) {
+                                } catch (NoSuchMethodError e) {
                                     isFlyMe = true;
                                     Log.w(Main.TAG, "Filter service intent: " + intent, e);
                                 }
