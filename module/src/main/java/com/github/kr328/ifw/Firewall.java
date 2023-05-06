@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 public final class Firewall {
     private static boolean initialized;
     private static IntentFirewall instance;
+    private static boolean isFlyMe;
 
     private static void tryGetIntentFirewall() {
         final Object instance = LocalServices.getService(ActivityManagerInternal.class);
@@ -103,26 +104,54 @@ public final class Firewall {
                         case ACTIVITY:
                             intent.setComponent(ComponentName.createRelative(info.activityInfo.packageName, info.activityInfo.name));
                             intent.setPackage(info.activityInfo.packageName);
-
-                            return impl.checkStartActivity(
+                            if (!isFlyMe)
+                                try {
+                                    return impl.checkStartActivity(
+                                            intent,
+                                            callingUid,
+                                            callingPid,
+                                            resolvedType,
+                                            info.activityInfo.applicationInfo
+                                    );
+                                } catch (Exception e) {
+                                    isFlyMe = true;
+                                    Log.w(Main.TAG, "Filter activity intent: " + intent, e);
+                                }
+                            if (isFlyMe) return impl.checkStartActivity(
                                     intent,
+                                    info.activityInfo.packageName,
                                     callingUid,
                                     callingPid,
                                     resolvedType,
                                     info.activityInfo.applicationInfo
-                            );
+                            ) != 1;
                         case SERVICE:
                             intent.setComponent(ComponentName.createRelative(info.serviceInfo.packageName, info.serviceInfo.name));
                             intent.setPackage(info.serviceInfo.packageName);
-
-                            return impl.checkService(
-                                    new ComponentName(info.serviceInfo.packageName, info.serviceInfo.name),
-                                    intent,
-                                    callingUid,
-                                    callingPid,
-                                    resolvedType,
-                                    info.serviceInfo.applicationInfo
-                            );
+                            if (!isFlyMe)
+                                try {
+                                    return impl.checkService(
+                                            new ComponentName(info.serviceInfo.packageName, info.serviceInfo.name),
+                                            intent,
+                                            callingUid,
+                                            callingPid,
+                                            resolvedType,
+                                            info.serviceInfo.applicationInfo
+                                    );
+                                } catch (Exception e) {
+                                    isFlyMe = true;
+                                    Log.w(Main.TAG, "Filter service intent: " + intent, e);
+                                }
+                            if (isFlyMe)
+                                return impl.checkService(
+                                        new ComponentName(info.serviceInfo.packageName, info.serviceInfo.name),
+                                        intent,
+                                        info.serviceInfo.packageName,
+                                        callingUid,
+                                        callingPid,
+                                        resolvedType,
+                                        info.serviceInfo.applicationInfo
+                                );
                     }
 
                     throw new IllegalArgumentException("unreachable");

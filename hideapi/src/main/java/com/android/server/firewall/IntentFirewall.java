@@ -15,9 +15,34 @@ public class IntentFirewall {
         throw new IllegalArgumentException("Stub!");
     }
 
+    // For FlyMe
+    public int checkStartActivity(
+            Intent intent,
+            String callingPackage,
+            int callerUid,
+            int callerPid,
+            String resolvedType,
+            ApplicationInfo resolvedApp
+    ) {
+        throw new IllegalArgumentException("Stub!");
+    }
+
     public boolean checkService(
             ComponentName resolvedService,
             Intent intent,
+            int callerUid,
+            int callerPid,
+            String resolvedType,
+            ApplicationInfo resolvedApp
+    ) {
+        throw new IllegalArgumentException("Stub!");
+    }
+
+    // For FlyMe
+    public boolean checkService(
+            ComponentName resolvedService,
+            Intent intent,
+            String callingPackage,
             int callerUid,
             int callerPid,
             String resolvedType,
