@@ -122,7 +122,7 @@ public final class Firewall {
                                         callingPid,
                                         resolvedType,
                                         info.activityInfo.applicationInfo
-                                ) != 1;
+                                ) == 1;
                             }
                         case SERVICE:
                             intent.setComponent(ComponentName.createRelative(info.serviceInfo.packageName, info.serviceInfo.name));
