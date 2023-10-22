@@ -20,7 +20,7 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create("libs") {
-            val magic = "1.5"
+            val magic = "1.8"
 
             library("magic-library", "com.github.kr328.magic", "library").version(magic)
         }
