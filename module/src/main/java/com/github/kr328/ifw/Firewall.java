@@ -20,6 +20,8 @@ public final class Firewall {
     private static IntentFirewall instance;
 
     private static void tryGetIntentFirewall() {
+        Log.d(Main.TAG, "Try get intent firewall");
+
         final Object instance = LocalServices.getService(ActivityManagerInternal.class);
         if (instance == null) {
             return;
