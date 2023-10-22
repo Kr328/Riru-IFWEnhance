@@ -27,10 +27,18 @@ public class Main {
                 @Override
                 public Binder addService(final String name, final Binder service) {
                     if ("package".equals(name)) {
-                        BinderInterceptors.install(service, next -> {
-                            final IPackageManager original = IPackageManager.Stub.asInterface(next);
-                            return Proxy.FACTORY.create(original, new Proxy(original));
-                        });
+                        Log.d(TAG, "PackageManagerService found");
+
+                        try {
+                            BinderInterceptors.install(service, next -> {
+                                final IPackageManager original = IPackageManager.Stub.asInterface(next);
+                                return Proxy.FACTORY.create(original, new Proxy(original));
+                            });
+
+                            Log.d(TAG, "Binder interceptor installed");
+                        } catch (Exception e) {
+                            Log.e(TAG, "Initialize binder interceptor failed", e);
+                        }
                     }
 
                     return super.addService(name, service);
